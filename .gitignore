@@ -1,0 +1,44 @@
+# Python & Virtual Environment
+.venv/
+__pycache__/
+*.py[cod]
+*$py.class
+*.env
+backend/.env
+training/.env
+
+# Node & Frontend
+node_modules/
+frontend/dist/
+frontend/.env
+*.local
+
+# Datasets & Weights
+datasets/cnn/
+datasets/yolo/
+datasets/*.zip
+datasets/*.tar.gz
+!datasets/DATASET_INFO.md
+
+# Large Weights (over 50MB)
+*.pt
+*.onnx
+model_weights/yolo_best.pt
+model_weights/yolo_best.onnx
+model_weights/cnn_mobilenetv2.pt
+model_weights/cnn_mobilenetv2.onnx
+!model_weights/MODEL_INFO.json
+
+# Backend runtime data & DB
+backend/data/*.db
+backend/data/snapshots/*
+backend/data/uploads/*
+!backend/data/snapshots/.gitkeep
+!backend/data/uploads/.gitkeep
+run/
+
+# OS & Editor
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/

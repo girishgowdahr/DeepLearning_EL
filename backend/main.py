@@ -50,6 +50,10 @@ app.include_router(routes_data.router, prefix="/api", tags=["Data & Analytics"])
 app.include_router(routes_settings.router, prefix="/api", tags=["Settings"])
 app.include_router(ws.router, tags=["WebSockets"])
 
+# Mount results directory for serving evaluation graphs & metrics
+if settings.RESULTS_DIR.exists():
+    app.mount("/results", StaticFiles(directory=str(settings.RESULTS_DIR)), name="results")
+
 # Mount built frontend if available (in demo mode)
 frontend_dist = settings.BASE_DIR / "frontend" / "dist"
 if frontend_dist.exists() and (frontend_dist / "index.html").exists():
@@ -57,8 +61,8 @@ if frontend_dist.exists() and (frontend_dist / "index.html").exists():
     
     @app.get("/{full_path:path}")
     async def serve_spa(full_path: str, request: Request):
-        # Don't intercept API or WS routes
-        if full_path.startswith("api/") or full_path.startswith("ws/"):
+        # Don't intercept API, WS, or results routes
+        if full_path.startswith("api/") or full_path.startswith("ws/") or full_path.startswith("results/"):
             return None
         file_candidate = frontend_dist / full_path
         if file_candidate.is_file():

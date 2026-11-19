@@ -1,0 +1,28 @@
+{
+  "timestamp": "2026-11-19 15:47:20",
+  "weights_dir": "D:\\RVCE\\Sem3\\Deep Learning EL\\ForestGuard-AI\\model_weights",
+  "degradation_audit": {
+    "tested": true,
+    "status": "PASSED",
+    "model_unavailable_verified": true
+  },
+  "decision_fusion_audit": {
+    "tested": true,
+    "status": "PASSED"
+  },
+  "cnn_inference": {
+    "status": "PENDING_WEIGHTS",
+    "available": false,
+    "predictions": [],
+    "errors": [],
+    "reason": "Model weight file not found at: D:\\RVCE\\Sem3\\Deep Learning EL\\ForestGuard-AI\\model_weights\\cnn_mobilenetv2.onnx"
+  },
+  "yolo_inference": {
+    "status": "PENDING_WEIGHTS",
+    "available": false,
+    "predictions": [],
+    "errors": [],
+    "reason": "Model weight file not found at: D:\\RVCE\\Sem3\\Deep Learning EL\\ForestGuard-AI\\model_weights\\yolo_best.onnx"
+  },
+  "honest_disclosure": "No trained model inference claimed without physical weight files. When weights are absent, system operates in verified MODEL_UNAVAILABLE state."
+}

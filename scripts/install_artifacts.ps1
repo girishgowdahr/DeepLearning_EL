@@ -182,9 +182,15 @@ foreach ($target in $targets) {
             Write-Host "    [CALCULATED HASH]  $($file.Name) -> $calcHash (no archive manifest entry)" -ForegroundColor DarkGray
         }
 
+        $destFileName = $file.Name
+        if ($file.Name -eq "MANIFEST.txt") {
+            $destFileName = "$($target.Name.ToLower())_manifest.txt"
+        }
+
         $stagedItemsToInstall += [PSCustomObject]@{
             SourcePath       = $file.FullName
             FileName         = $file.Name
+            DestFileName     = $destFileName
             DestDir          = $destDir
             StagedHash       = $calcHash
             ModelName        = $target.Name
@@ -224,9 +230,9 @@ New-Item -ItemType Directory -Path $ResultsDir -Force | Out-Null
 
 # 2. Copy validated items
 foreach ($item in $stagedItemsToInstall) {
-    $destFile = Join-Path $item.DestDir $item.FileName
+    $destFile = Join-Path $item.DestDir $item.DestFileName
     Copy-Item -Path $item.SourcePath -Destination $destFile -Force
-    Write-Host "  + Installed: $($item.FileName) -> $(Split-Path $destFile -LeafBase)$(Split-Path $destFile -Extension)" -ForegroundColor Green
+    Write-Host "  + Installed: $($item.FileName) -> $($item.DestFileName)" -ForegroundColor Green
 }
 
 # ==============================================================================
@@ -242,19 +248,19 @@ $manifestRecords += "# Algorithm: SHA-256"
 $manifestRecords += "# -----------------------------------------------------------------------------"
 
 foreach ($item in $stagedItemsToInstall) {
-    $destFile = Join-Path $item.DestDir $item.FileName
+    $destFile = Join-Path $item.DestDir $item.DestFileName
     if (-not (Test-Path $destFile)) {
         Abort-Install "Post-installation verification failed: '$destFile' is missing from disk!"
     }
 
     $diskHash = (Get-FileHash -Path $destFile -Algorithm SHA256).Hash.ToLower()
     if ($diskHash -ne $item.StagedHash) {
-        Abort-Install "Post-installation DISK CORRUPTION detected for '$($item.FileName)'! Staged: $($item.StagedHash), Disk: $diskHash"
+        Abort-Install "Post-installation DISK CORRUPTION detected for '$($item.DestFileName)'! Staged: $($item.StagedHash), Disk: $diskHash"
     }
 
     $relPath = $destFile.Replace($BaseDir, "").TrimStart("\/")
     $manifestRecords += "$diskHash *$relPath"
-    Write-Host "  ✅ Verified on-disk integrity: $($item.FileName) (SHA-256: $diskHash)" -ForegroundColor Green
+    Write-Host "  ✅ Verified on-disk integrity: $($item.DestFileName) (SHA-256: $diskHash)" -ForegroundColor Green
 }
 
 # Write out the official installed manifest to both model_weights and results

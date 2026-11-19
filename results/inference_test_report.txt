@@ -1,0 +1,45 @@
+================================================================================
+🌲 FORESTGUARD AI: MODEL INFERENCE & DEGRADATION AUDIT REPORT
+================================================================================
+Generated At:         2026-11-19 15:47:20
+Weights Directory:    D:\RVCE\Sem3\Deep Learning EL\ForestGuard-AI\model_weights
+
+1. SAFE DEGRADED MODE & DECISION ENGINE AUDIT
+--------------------------------------------------------------------------------
+  Degraded Fallback:  PASSED (MODEL_UNAVAILABLE state verified)
+  Multi-Modal Fusion: PASSED (Temporal transitions verified)
+
+2. CNN CLASSIFIER (MobileNetV2 ONNX)
+--------------------------------------------------------------------------------
+  Status:             PENDING_WEIGHTS
+  Weights File:       cnn_mobilenetv2.onnx (PENDING KAGGLE ARTIFACTS)
+  Class Mapping:      0='fire', 1='no_fire'
+
+3. YOLO DETECTOR (YOLO11n PyTorch/ONNX)
+--------------------------------------------------------------------------------
+  Status:             PENDING_WEIGHTS
+  Weights File:       yolo_best.onnx (PENDING KAGGLE ARTIFACTS)
+  Class Mapping:      0='fire', 1='smoke'
+
+4. BENCHMARK TEST PREDICTIONS
+--------------------------------------------------------------------------------
+  Case: Clear Forest Canopy (Ground Truth: no_fire)
+    CNN Prediction:  PENDING_WEIGHTS
+    YOLO Prediction: PENDING_WEIGHTS
+  Case: Sunset Hard Negative (Ground Truth: no_fire)
+    CNN Prediction:  PENDING_WEIGHTS
+    YOLO Prediction: PENDING_WEIGHTS
+  Case: Active Wildfire (Ground Truth: fire)
+    CNN Prediction:  PENDING_WEIGHTS
+    YOLO Prediction: PENDING_WEIGHTS
+  Case: Dense Smoke Plume (Ground Truth: smoke)
+    CNN Prediction:  PENDING_WEIGHTS
+    YOLO Prediction: PENDING_WEIGHTS
+  Case: Night Forest Baseline (Ground Truth: no_fire)
+    CNN Prediction:  PENDING_WEIGHTS
+    YOLO Prediction: PENDING_WEIGHTS
+
+================================================================================
+HONEST AUDIT VERDICT:
+No trained model inference claimed without physical weight files. When weights are absent, system operates in verified MODEL_UNAVAILABLE state.
+================================================================================

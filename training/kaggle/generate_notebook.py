@@ -1,6 +1,8 @@
 """
 Generator for ForestGuard_AI_Complete_Training.ipynb
-Constructs a complete, self-contained, reproducible Kaggle Jupyter Notebook.
+Constructs an audited, fully automated, leak-free, reproducible Kaggle Jupyter Notebook.
+Supports dynamic class resolution for sayedgamal99/smoke-fire-detection-yolo-d-fire-dataset
+as well as alternative D-Fire mirrors, ensuring strict compatibility with the FastAPI backend.
 """
 
 import json
@@ -36,26 +38,31 @@ def create_notebook():
     # -------------------------------------------------------------
     cells.append(md_cell("""# 🌲 ForestGuard AI — Fully Automated Dual-Model Training Pipeline
 ### Academic Prototype: Early Wildfire & Smoke Detection Decision System
-**Architecture**: Ultralytics YOLO11 Nano (Fire & Smoke Bounding Box Detector) + MobileNetV2 CNN (Fire Classifier)  
+**Architectures**: Ultralytics YOLO11 Nano (Bounding Box Detector) + MobileNetV2 CNN (Binary Classifier)  
 **Target Platform**: Kaggle Free GPU (**2 × NVIDIA Tesla T4** or **1 × Tesla T4**)  
-**Outputs**: `yolo_artifacts.zip` and `cnn_artifacts.zip` (ready for one-click download to your laptop)
+**Dataset**: `sayedgamal99/smoke-fire-detection-yolo-d-fire-dataset` (or D-Fire mirror)  
+**Outputs**: `yolo_artifacts.zip` & `cnn_artifacts.zip` (ready for one-click download to your laptop)
 
 ---
 
-### 📋 Prerequisites & Quick Setup
+### 📋 Prerequisites & Kaggle Execution Guide
 1. **Accelerator**: In the right sidebar under **Notebook Options**, set **Accelerator** to **GPU T4 x2** (or GPU T4 x1).
-2. **Internet**: Toggle **Internet** to **ON** (required to download base model weights & packages).
-3. **Dataset**: Click **+ Add Input** (top right) $\\rightarrow$ Search for `smoke-fire-detection-yolo` $\\rightarrow$ Add **`thunguyen1012/smoke-fire-detection-yolo`** (License: CC0 / CC BY 4.0).
+2. **Internet**: Toggle **Internet** to **ON** (required to fetch pretrained base weights).
+3. **Dataset**: Click **+ Add Input** (top right) $\\rightarrow$ Search for:
+   ```
+   smoke-fire-detection-yolo-d-fire-dataset
+   ```
+   Add **`sayedgamal99/smoke-fire-detection-yolo-d-fire-dataset`** (License: CC0 / CC BY 4.0).
 4. **Execution Mode**:
-   - `SMOKE_MODE = True`: 1-epoch quick test on mini-batch (~3–5 minutes) to verify GPU & pipeline.
-   - `SMOKE_MODE = False`: Full production training (~45–60 minutes) producing final IEEE paper-grade models.
-5. **Run All**: Click **Run All** (or **Save Version** $\\rightarrow$ **Save & Run All (Commit)** for background training)."""))
+   - `SMOKE_MODE = True`: 1-epoch quick pipeline verification (~3–5 minutes) to test GPU, tensor flow, and packaging.
+   - `SMOKE_MODE = False`: Full production training (~45–60 minutes) yielding IEEE research-grade weights.
+5. **Run All**: Click **Run All** (or **Save Version** $\\rightarrow$ **Save & Run All (Commit)** for background cloud training)."""))
 
     # -------------------------------------------------------------
     # CELL 2: Environment and GPU Verification
     # -------------------------------------------------------------
     cells.append(md_cell("""## 1. Environment & GPU Verification
-Checks Kaggle runtime environment, CUDA availability, GPU device names, memory, and global configurations."""))
+Checks the Kaggle runtime environment, CUDA availability, GPU device models, VRAM capacity, and prepares directory trees."""))
 
     cells.append(code_cell("""import os
 import sys
@@ -66,7 +73,7 @@ import zipfile
 import hashlib
 from pathlib import Path
 
-# Set to True for a quick 3-minute validation run; False for full production training
+# Toggle: True = ~3-min validation pass; False = full academic training
 SMOKE_MODE = os.environ.get("SMOKE", "0") == "1" or False
 
 print("=" * 70)
@@ -76,10 +83,10 @@ print("=" * 70)
 
 # Check PyTorch & CUDA
 import torch
-print(f"Python Version: {sys.version.split()[0]}")
+print(f"Python Version:  {sys.version.split()[0]}")
 print(f"PyTorch Version: {torch.__version__}")
 cuda_available = torch.cuda.is_available()
-print(f"CUDA Available: {cuda_available}")
+print(f"CUDA Available:  {cuda_available}")
 
 if not cuda_available:
     print("⚠️ WARNING: CUDA not detected! Please set Accelerator = GPU T4 x2 in Kaggle settings.")
@@ -134,16 +141,16 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 print(f"✓ Ultralytics Version: {ultralytics.__version__}")
-print(f"✓ ONNX Version: {onnx.__version__}")
-print(f"✓ ONNX Runtime Version: {ort.__version__}")
-print(f"✓ Scikit-learn Version: {sklearn.__version__}")
+print(f"✓ ONNX Version:        {onnx.__version__}")
+print(f"✓ ONNX Runtime Version:{ort.__version__}")
+print(f"✓ Scikit-learn Version:{sklearn.__version__}")
 print("✅ All dependencies verified successfully.")"""))
 
     # -------------------------------------------------------------
-    # CELL 4: Dataset Discovery & Integrity Check
+    # CELL 4: Dynamic Dataset Discovery & Early Gate
     # -------------------------------------------------------------
-    cells.append(md_cell("""## 3. Dataset Discovery
-Locates the raw D-Fire / smoke-fire dataset in `/kaggle/input`. If missing, execution halts with actionable instructions."""))
+    cells.append(md_cell("""## 3. Dataset Discovery & Validation Gate
+Discovers the attached dataset in `/kaggle/input`. Specifically prioritizes `sayedgamal99/smoke-fire-detection-yolo-d-fire-dataset` and other D-Fire mirrors. Halts execution early with clear instructions if missing."""))
 
     cells.append(code_cell("""def discover_dataset() -> Path:
     kaggle_input = Path("/kaggle/input")
@@ -153,46 +160,131 @@ Locates the raw D-Fire / smoke-fire dataset in `/kaggle/input`. If missing, exec
             return local_cand
         raise FileNotFoundError("Could not find /kaggle/input or local datasets/DFire folder.")
 
-    # Search for DFire or smoke-fire datasets
-    for cand in kaggle_input.glob("**/*train*"):
-        if (cand / "images").exists() or (cand / "labels").exists():
-            return cand.parent
-        if cand.is_dir() and any(x in str(cand).lower() for x in ["dfire", "smoke", "fire"]):
+    # 1. Search for sayedgamal99 dataset specifically
+    for cand in kaggle_input.glob("**/*sayedgamal99*"):
+        if cand.is_dir():
+            return cand
+    for cand in kaggle_input.glob("**/*d-fire-dataset*"):
+        if cand.is_dir():
             return cand
 
+    # 2. Search for any smoke-fire or dfire directory containing train/images or data.yaml
+    for cand in kaggle_input.glob("**/*"):
+        if cand.is_dir():
+            if (cand / "data.yaml").exists() or (cand / "data.yml").exists():
+                return cand
+            if (cand / "train" / "images").exists() or (cand / "train" / "labels").exists():
+                return cand
+
+    # 3. Search for any directory in /kaggle/input
     subdirs = [p for p in kaggle_input.iterdir() if p.is_dir()]
     if subdirs:
+        for s in subdirs:
+            if (s / "data.yaml").exists() or (s / "train").exists():
+                return s
         return subdirs[0]
 
     raise FileNotFoundError(
         "❌ DATASET NOT DETECTED IN /kaggle/input!\\n"
         "Please attach the dataset before proceeding:\\n"
         "1. Click '+ Add Input' in the right-hand panel.\\n"
-        "2. Search for: 'smoke-fire-detection-yolo' (thunguyen1012/smoke-fire-detection-yolo)\\n"
+        "2. Search for: 'smoke-fire-detection-yolo-d-fire-dataset' (sayedgamal99/smoke-fire-detection-yolo-d-fire-dataset)\\n"
+        "   or 'smoke-fire-detection-yolo' (thunguyen1012/smoke-fire-detection-yolo).\\n"
         "3. Click the '+' button to attach it, then rerun this cell."
     )
 
 raw_dataset_path = discover_dataset()
 print(f"📂 Raw dataset located at: {raw_dataset_path}")
-print("Dataset contents:")
+print("Directory listing:")
 for item in raw_dataset_path.iterdir():
     print(f"  - {item.name} ({'dir' if item.is_dir() else 'file'})")"""))
 
     # -------------------------------------------------------------
-    # CELL 5: Dataset Validation & Preparation
+    # CELL 5: Dynamic Class Mapping Resolution & Leak-Free Preparation
     # -------------------------------------------------------------
-    cells.append(md_cell("""## 4. Dataset Validation & Leak-Free Preparation
-Prepares both YOLO and CNN datasets from identical raw splits to guarantee zero data leakage.
-- **YOLO**: Retains raw fire (0) and smoke (1) bounding box annotations.
-- **CNN**: Derives binary classification (`fire` vs `no_fire`). Strictly excludes smoke-only images to prevent ground truth label noise."""))
+    cells.append(md_cell("""## 4. Dynamic Class Mapping & Leak-Free Dataset Preparation
+**Critical Audit Feature**:
+1. Dynamically parses the raw dataset's `data.yaml` to resolve which class ID is `fire` and which is `smoke`. Never assumes class 0 = fire. (e.g. `sayedgamal99` defines `0: smoke, 1: fire`).
+2. Standardizes the output YOLO dataset to `{0: 'fire', 1: 'smoke'}` so that backend interfaces and metrics remain 100% unified.
+3. Derives the binary CNN classification dataset (`fire` vs `no_fire`), strictly excluding smoke-only frames to avoid noisy ground truth."""))
 
-    cells.append(code_cell("""MAX_YOLO_TRAIN = 200 if SMOKE_MODE else 6000
+    cells.append(code_cell("""# 1. Locate and parse raw dataset YAML configuration
+raw_yaml_path = None
+for y in raw_dataset_path.glob("**/*.y*ml"):
+    if "data" in y.name.lower() or y.name in ["data.yaml", "data.yml"]:
+        raw_yaml_path = y
+        break
+
+if not raw_yaml_path:
+    yamls = list(raw_dataset_path.glob("*.y*ml")) + list(raw_dataset_path.glob("*/*.y*ml"))
+    if yamls:
+        raw_yaml_path = yamls[0]
+
+if not raw_yaml_path or not raw_yaml_path.exists():
+    raise FileNotFoundError(
+        f"❌ Could not find a dataset YAML file (data.yaml) in {raw_dataset_path}!\\n"
+        "Please ensure the attached dataset contains data.yaml defining the class names."
+    )
+
+print(f"📄 Found dataset configuration: {raw_yaml_path}")
+with open(raw_yaml_path, "r", encoding="utf-8") as f:
+    raw_cfg = yaml.safe_load(f)
+
+raw_names = raw_cfg.get("names", {})
+print(f"Raw class names in YAML: {raw_names}")
+
+# Dynamically resolve raw class indices
+raw_fire_id = None
+raw_smoke_id = None
+
+if isinstance(raw_names, dict):
+    for k, v in raw_names.items():
+        v_str = str(v).strip().lower()
+        if "fire" in v_str:
+            raw_fire_id = int(k)
+        elif "smoke" in v_str:
+            raw_smoke_id = int(k)
+elif isinstance(raw_names, list):
+    for idx, v in enumerate(raw_names):
+        v_str = str(v).strip().lower()
+        if "fire" in v_str:
+            raw_fire_id = idx
+        elif "smoke" in v_str:
+            raw_smoke_id = idx
+else:
+    raise ValueError(f"❌ Unsupported format for 'names' in {raw_yaml_path}: {type(raw_names)}")
+
+# Strict compatibility verification: Stop execution if classes are not recognized
+if raw_fire_id is None or raw_smoke_id is None:
+    raise ValueError(
+        f"❌ INCOMPATIBLE DATASET CLASS MAPPING in {raw_yaml_path}!\\n"
+        f"Resolved raw_fire_id={raw_fire_id}, raw_smoke_id={raw_smoke_id}.\\n"
+        f"Expected class names to contain 'fire' and 'smoke', but found: {raw_names}.\\n"
+        "Execution stopped to prevent training on inverted or incompatible classes."
+    )
+
+print("=" * 65)
+print(f"✓ Dynamically Resolved Raw Class Mapping:")
+print(f"   Raw Fire Class ID:  {raw_fire_id}  (Name: '{raw_names[raw_fire_id]}')")
+print(f"   Raw Smoke Class ID: {raw_smoke_id} (Name: '{raw_names[raw_smoke_id]}')")
+print(f"✓ Standardized Output Target Mapping for Backend:")
+print(f"   Standardized Class 0 -> 'fire'")
+print(f"   Standardized Class 1 -> 'smoke'")
+print("=" * 65)
+
+# 2. Capped dataset sizes to ensure training completes on schedule
+MAX_YOLO_TRAIN = 200 if SMOKE_MODE else 6000
 MAX_CNN_PER_CLASS = 100 if SMOKE_MODE else 3000
 MAX_VAL_SAMPLES = 50 if SMOKE_MODE else 1000
 MAX_TEST_SAMPLES = 50 if SMOKE_MODE else 1000
 
 dataset_manifest = {
     "raw_dataset_path": str(raw_dataset_path),
+    "raw_yaml_path": str(raw_yaml_path),
+    "raw_classes": raw_names,
+    "raw_fire_id": raw_fire_id,
+    "raw_smoke_id": raw_smoke_id,
+    "standardized_classes": {0: "fire", 1: "smoke"},
     "timestamp": time.strftime("%Y-%m-%d %H:%M:%S"),
     "splits": {}
 }
@@ -247,31 +339,39 @@ for s in splits:
     for img in images:
         lbl_file = (src_lbl / f"{img.stem}.txt") if src_lbl else None
         has_fire = False
-        is_smoke_only = False
+        has_smoke = False
+        standardized_yolo_lines = []
 
         if lbl_file and lbl_file.exists():
             lines = lbl_file.read_text(encoding="utf-8", errors="ignore").strip().splitlines()
-            classes = [int(line.split()[0]) for line in lines if line.strip() and line.split()[0].isdigit()]
-            if 0 in classes:
-                has_fire = True
-            elif 1 in classes and 0 not in classes:
-                is_smoke_only = True
-        else:
-            has_fire = False
+            for line in lines:
+                parts = line.strip().split()
+                if not parts:
+                    continue
+                try:
+                    c_id = int(parts[0])
+                    coords = parts[1:]
+                    if c_id == raw_fire_id:
+                        has_fire = True
+                        standardized_yolo_lines.append(f"0 {' '.join(coords)}")
+                    elif c_id == raw_smoke_id:
+                        has_smoke = True
+                        standardized_yolo_lines.append(f"1 {' '.join(coords)}")
+                except ValueError:
+                    continue
 
-        # Populate YOLO dataset
+        is_smoke_only = (has_smoke and not has_fire)
+
+        # Populate Standardized YOLO dataset
         if yolo_count < yolo_cap:
             dest_img = YOLO_DATA_DIR / s / "images" / img.name
             dest_lbl = YOLO_DATA_DIR / s / "labels" / f"{img.stem}.txt"
             if not dest_img.exists():
                 shutil.copy2(img, dest_img)
-            if lbl_file and lbl_file.exists() and not dest_lbl.exists():
-                shutil.copy2(lbl_file, dest_lbl)
-            elif not dest_lbl.exists():
-                dest_lbl.touch()
+            dest_lbl.write_text("\\n".join(standardized_yolo_lines), encoding="utf-8")
             yolo_count += 1
 
-        # Populate CNN dataset (Exclude smoke-only to eliminate label ambiguity)
+        # Populate CNN dataset (Exclude smoke-only to avoid noisy label ground truth)
         if not is_smoke_only:
             if has_fire and cnn_fire_count < cnn_cap:
                 dest = CNN_DATA_DIR / s / "fire" / img.name
@@ -289,7 +389,7 @@ for s in splits:
     dataset_manifest["splits"][s]["cnn_nofire"] = cnn_nofire_count
     print(f"  ✓ Prepared split '{s}': YOLO={yolo_count} | CNN Fire={cnn_fire_count}, No-Fire={cnn_nofire_count}")
 
-# Generate data.yaml for YOLO
+# Generate standardized data.yaml for YOLO training
 data_yaml_path = YOLO_DATA_DIR / "data.yaml"
 with open(data_yaml_path, "w", encoding="utf-8") as f:
     yaml.dump({
@@ -303,14 +403,14 @@ with open(data_yaml_path, "w", encoding="utf-8") as f:
 with open(BASE_DIR / "dataset_manifest.json", "w", encoding="utf-8") as f:
     json.dump(dataset_manifest, f, indent=2)
 
-print(f"\\n✅ Generated data.yaml: {data_yaml_path}")
+print(f"\\n✅ Generated standardized data.yaml: {data_yaml_path}")
 print(f"✅ Generated dataset manifest: {BASE_DIR / 'dataset_manifest.json'}")"""))
 
     # -------------------------------------------------------------
     # CELL 6: YOLO Smoke Test
     # -------------------------------------------------------------
     cells.append(md_cell("""## 5. YOLO Smoke Test
-Runs a 1-epoch mini pass on 50 samples to verify model downloading, CUDA tensor allocation, and loss backward pass before full training."""))
+Runs a 1-epoch mini training pass on 50 samples to verify model downloading, CUDA tensor allocation, and loss backward pass before full training."""))
 
     cells.append(code_cell("""print("🧪 Running YOLO 1-Epoch Smoke Test...")
 smoke_yaml_path = YOLO_DATA_DIR / "smoke_data.yaml"
@@ -340,7 +440,7 @@ print("✅ YOLO Smoke Test Passed! Forward pass, backward pass, and CUDA verifie
     # CELL 7: YOLO Full Training
     # -------------------------------------------------------------
     cells.append(md_cell("""## 6. YOLO Full Training
-Fine-tunes YOLO11 Nano (`yolo11n.pt`) on the D-Fire dataset with early stopping and best checkpoint preservation."""))
+Fine-tunes YOLO11 Nano (`yolo11n.pt`) on the standardized D-Fire dataset with early stopping and best checkpoint preservation."""))
 
     cells.append(code_cell("""yolo_epochs = 1 if SMOKE_MODE else 30
 yolo_batch = 16
@@ -382,7 +482,7 @@ Evaluates the best checkpoint on the held-out `test` split, saves genuine metric
 eval_model = YOLO(str(target_best_pt))
 val_res = eval_model.val(data=str(data_yaml_path), split="test", imgsz=yolo_imgsz)
 
-# Extract genuine test metrics
+# Extract genuine test metrics (Class 0 = fire, Class 1 = smoke)
 yolo_metrics = {
     "model": "YOLO11 Nano Wildfire Detector",
     "timestamp": time.strftime("%Y-%m-%d %H:%M:%S"),
@@ -615,10 +715,10 @@ print(f"\\n✅ Best Validation Accuracy: {best_val_acc:.4f}")
 print(f"✅ Saved Best CNN Weights to: {best_cnn_weights}")"""))
 
     # -------------------------------------------------------------
-    # CELL 11: CNN Evaluation on Held-Out Test Set
+    # CELL 11: CNN Evaluation on Held-Out Test Set (Corrected Rounding Bug)
     # -------------------------------------------------------------
     cells.append(md_cell("""## 10. CNN Evaluation on Held-Out Test Set
-Evaluates the best MobileNetV2 checkpoint on unseen test images, producing test accuracy, confusion matrix, precision, recall, and F1-score."""))
+Evaluates the best MobileNetV2 checkpoint on unseen test images, producing test accuracy, confusion matrix, precision, recall (with 4-decimal precision), and F1-score."""))
 
     cells.append(code_cell("""from sklearn.metrics import confusion_matrix, precision_recall_fscore_support
 
@@ -640,6 +740,7 @@ cm = confusion_matrix(targets, preds)
 p, r, f1, _ = precision_recall_fscore_support(targets, preds, average="binary", pos_label=0)
 test_acc = float(np.mean(preds == targets))
 
+# Audited: recall correctly rounded to 4 decimals
 cnn_metrics = {
     "model": "MobileNetV2 Fire Classifier",
     "timestamp": time.strftime("%Y-%m-%d %H:%M:%S"),
@@ -649,7 +750,7 @@ cnn_metrics = {
     "classes": {
         "fire": {
             "precision": round(float(p), 4),
-            "recall": round(float(r)),
+            "recall": round(float(r), 4),
             "f1": round(float(f1), 4)
         }
     },
@@ -667,10 +768,10 @@ print(f"Recall:    {r:.4f}")
 print(f"Confusion Matrix:\\n{cm}")"""))
 
     # -------------------------------------------------------------
-    # CELL 12: ONNX Export & Numerical Validation
+    # CELL 12: ONNX Export & Backend Compatibility Validation
     # -------------------------------------------------------------
-    cells.append(md_cell("""## 11. ONNX Export & Cross-Framework Validation
-Exports MobileNetV2 to ONNX format with dynamic batching and validates numerical tolerances against PyTorch."""))
+    cells.append(md_cell("""## 11. ONNX Export & Backend Loader Verification
+Exports MobileNetV2 to ONNX format with dynamic batching, validates numerical tolerances against PyTorch, and directly verifies compatibility against the FastAPI `CNNClassifier` backend loader interface."""))
 
     cells.append(code_cell("""print("📦 Exporting MobileNetV2 to ONNX...")
 dummy_in = torch.randn(1, 3, 224, 224).to(cnn_device)
@@ -689,8 +790,8 @@ torch.onnx.export(
 )
 print(f"Saved ONNX model to: {onnx_path} ({onnx_path.stat().st_size / (1024*1024):.2f} MB)")
 
-# Verify with ONNX Runtime on CPU
-print("🔍 Verifying ONNX model numerical equivalence with ONNX Runtime...")
+# 1. Numerical Equivalence Verification
+print("🔍 Verifying ONNX numerical equivalence against PyTorch...")
 ort_sess = ort.InferenceSession(str(onnx_path), providers=["CPUExecutionProvider"])
 ort_in_name = ort_sess.get_inputs()[0].name
 dummy_cpu = dummy_in.cpu().numpy()
@@ -703,9 +804,44 @@ with torch.no_grad():
 diff = np.max(np.abs(ort_out - pt_out))
 print(f"Maximum absolute difference: {diff:.6e}")
 assert diff < 1e-4, f"Numerical discrepancy exceeds tolerance: {diff}"
-print("✅ ONNX verification PASSED! Model is fully compatible with laptop inference.")
+print("✓ PyTorch vs ONNX Runtime output difference < 1e-4")
 
-# Create MODEL_INFO.json
+# 2. Strict Backend Interface Simulation (replicates backend/models/cnn_classifier.py)
+print("\\n🔍 Verifying compatibility with FastAPI backend CNNClassifier...")
+options = ort.SessionOptions()
+options.intra_op_num_threads = 4
+backend_session = ort.InferenceSession(str(onnx_path), sess_options=options, providers=["CPUExecutionProvider"])
+
+in_node = backend_session.get_inputs()[0]
+out_node = backend_session.get_outputs()[0]
+assert in_node.name == "input", f"Expected input name 'input', got {in_node.name}"
+assert out_node.name == "output", f"Expected output name 'output', got {out_node.name}"
+
+# Simulate exact backend preprocessing
+dummy_raw_bgr = np.random.randint(0, 256, (480, 640, 3), dtype=np.uint8)
+import cv2
+resized = cv2.resize(dummy_raw_bgr, (224, 224))
+rgb = cv2.cvtColor(resized, cv2.COLOR_BGR2RGB)
+normalized = rgb.astype(np.float32) / 255.0
+mean = np.array([0.485, 0.456, 0.406], dtype=np.float32)
+std = np.array([0.229, 0.224, 0.225], dtype=np.float32)
+norm = (normalized - mean) / std
+chw = np.transpose(norm, (2, 0, 1))
+backend_input = np.expand_dims(chw, axis=0)
+
+raw_outputs = backend_session.run([out_node.name], {in_node.name: backend_input})[0]
+logits = raw_outputs[0]
+exp_logits = np.exp(logits - np.max(logits))
+probs = exp_logits / np.sum(exp_logits)
+
+prob_fire = float(probs[0])
+prob_no_fire = float(probs[1])
+assert 0.0 <= prob_fire <= 1.0 and 0.0 <= prob_no_fire <= 1.0
+assert abs((prob_fire + prob_no_fire) - 1.0) < 1e-5
+print(f"✓ Backend simulation output: fire={prob_fire:.4f}, no_fire={prob_no_fire:.4f}")
+print("✅ CNN ONNX model verified 100% compatible with backend CNNClassifier!")
+
+# 3. Create MODEL_INFO.json
 model_info = {
     "cnn": {
         "name": "MobileNetV2 Classifier",

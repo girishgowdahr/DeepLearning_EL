@@ -13,9 +13,24 @@ This directory contains the automated training pipeline for **ForestGuard AI**:
 | :--- | :--- | :--- |
 | **Hardware** | **2 × NVIDIA Tesla T4** (or 1 × T4) | Free on Kaggle (30 GPU hours/week) |
 | **Internet** | **Enabled** | Required to fetch base weights (`yolo11n.pt`, ImageNet) |
-| **Dataset** | `thunguyen1012/smoke-fire-detection-yolo` | CC0 Public Domain / CC BY 4.0 |
+| **Primary Dataset** | `sayedgamal99/smoke-fire-detection-yolo-d-fire-dataset` | CC0 Public Domain / CC BY 4.0 |
+| **Alternative Mirrors**| `thunguyen1012/smoke-fire-detection-yolo` | Fully supported via dynamic class mapping |
 | **Smoke Test Runtime** | **~3–5 minutes** | Quick verification with `SMOKE_MODE = True` |
 | **Full Production Runtime**| **~45–60 minutes** | 30 epochs YOLO + 13 epochs CNN (`SMOKE_MODE = False`) |
+
+---
+
+## 🧠 Dynamic Class Mapping & Architecture Compatibility
+
+Different Kaggle mirrors of D-Fire define class orders differently:
+* `sayedgamal99/smoke-fire-detection-yolo-d-fire-dataset` defines `0: smoke, 1: fire`.
+* Other mirrors define `0: fire, 1: smoke`.
+
+The notebook **dynamically inspects `data.yaml` at runtime** to resolve raw class IDs:
+1. Identifies the exact raw IDs for `fire` and `smoke`.
+2. Standardizes the YOLO dataset annotations so that output weights always map `0 -> fire` and `1 -> smoke`.
+3. Derives the binary CNN dataset (`fire` vs `no_fire`), strictly excluding smoke-only frames.
+4. Generates ONNX models directly matching the FastAPI backend loader interfaces (`CNNClassifier` and `YOLODetector`).
 
 ---
 
@@ -43,11 +58,11 @@ In the right-hand **Notebook Options / Settings** panel:
 1. In the top right panel, click **"+ Add Input"**.
 2. In the search box, type:
    ```
-   smoke-fire-detection-yolo
+   smoke-fire-detection-yolo-d-fire-dataset
    ```
-3. Locate **`thunguyen1012/smoke-fire-detection-yolo`** (or `gaiasd/dfire-dataset`).
+3. Locate **`sayedgamal99/smoke-fire-detection-yolo-d-fire-dataset`**.
 4. Click the **"+"** button to attach it to the notebook.
-   *The notebook automatically detects the dataset root in `/kaggle/input` and validates train/val/test splits.*
+   *The notebook automatically detects the dataset root in `/kaggle/input`, parses `data.yaml`, and verifies train/val/test splits.*
 
 ---
 

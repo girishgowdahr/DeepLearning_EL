@@ -33,8 +33,8 @@ In the right-hand **Notebook Options / Settings** panel:
 
 ## Step 3: Attach the D-Fire Dataset
 1. Click **"+ Add Input"** (at top right).
-2. Search for: `smoke-fire-detection-yolo`
-3. Look for **`thunguyen1012/smoke-fire-detection-yolo`** (or `gaiasd/dfire-dataset`).
+2. Search for: `smoke-fire-detection-yolo-d-fire-dataset`
+3. Look for **`sayedgamal99/smoke-fire-detection-yolo-d-fire-dataset`** (or `thunguyen1012/smoke-fire-detection-yolo`).
 4. Click the **+** button to attach it to the notebook.
    - *License*: CC0 / CC BY 4.0. Completely free, no permission requests or payments needed.
 

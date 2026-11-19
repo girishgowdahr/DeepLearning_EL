@@ -21,9 +21,9 @@ export function LiveCamera() {
     return () => clearInterval(interval);
   }, []);
 
-  const phoneUrl = networkInfo?.phone_camera_url || `https://${window.location.hostname}:8000/camera`;
+  const phoneUrl = networkInfo?.phone_camera_url || null;
   // Show the link without the secret token; the QR code and Copy button carry the full link.
-  const phoneUrlDisplay = phoneUrl.replace(/#t=.*$/, '#t=••••••••');
+  const phoneUrlDisplay = phoneUrl ? phoneUrl.replace(/#t=.*$/, '#t=••••••••') : 'No HTTPS tunnel or certificate active';
   const isTunnel = Boolean(networkInfo?.is_tunnel_active);
 
   // Phone connection state, driven by /ws/events camera events + polled /api/camera/status
@@ -206,18 +206,31 @@ export function LiveCamera() {
               </p>
             )}
 
-            <div style={{ padding: '14px', background: '#fff', borderRadius: '10px', display: 'inline-block', margin: '0 auto 14px' }}>
-              <QRCodeSVG value={phoneUrl} size={150} />
-            </div>
+            {phoneUrl ? (
+              <>
+                <div style={{ padding: '14px', background: '#fff', borderRadius: '10px', display: 'inline-block', margin: '0 auto 14px' }}>
+                  <QRCodeSVG value={phoneUrl} size={150} />
+                </div>
 
-            <div style={{ display: 'flex', alignItems: 'center', gap: '6px', background: 'var(--bg-subtle)', padding: '6px 10px', borderRadius: '6px', fontSize: '0.75rem', fontFamily: 'var(--font-mono)', overflow: 'hidden' }}>
-              <span style={{ flex: 1, textOverflow: 'ellipsis', overflow: 'hidden', whiteSpace: 'nowrap' }}>
-                {phoneUrlDisplay}
-              </span>
-              <button onClick={handleCopyUrl} style={{ color: copied ? 'var(--color-green)' : 'var(--text-muted)' }}>
-                {copied ? <Check size={16} /> : <Copy size={16} />}
-              </button>
-            </div>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '6px', background: 'var(--bg-subtle)', padding: '6px 10px', borderRadius: '6px', fontSize: '0.75rem', fontFamily: 'var(--font-mono)', overflow: 'hidden' }}>
+                  <span style={{ flex: 1, textOverflow: 'ellipsis', overflow: 'hidden', whiteSpace: 'nowrap' }}>
+                    {phoneUrlDisplay}
+                  </span>
+                  <button onClick={handleCopyUrl} style={{ color: copied ? 'var(--color-green)' : 'var(--text-muted)' }}>
+                    {copied ? <Check size={16} /> : <Copy size={16} />}
+                  </button>
+                </div>
+              </>
+            ) : (
+              <div style={{ padding: '20px 14px', background: 'var(--bg-subtle)', borderRadius: '10px', margin: '0 auto 14px', maxWidth: '320px' }}>
+                <p style={{ fontSize: '0.78rem', color: 'var(--text-muted)', marginBottom: '8px' }}>
+                  Waiting for secure Cloudflare tunnel...
+                </p>
+                <code style={{ fontSize: '0.72rem', color: 'var(--color-orange)', display: 'block' }}>
+                  .\scripts\run_demo.ps1
+                </code>
+              </div>
+            )}
           </div>
 
           {/* Alternative Camera Sources */}

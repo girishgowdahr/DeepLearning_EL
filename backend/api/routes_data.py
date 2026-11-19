@@ -110,8 +110,16 @@ def get_network_info():
     # server, so it does not appear in uvicorn / Cloudflare logs.
     from backend.services.security import get_phone_token
     token = get_phone_token()
-    base_url = f"{tunnel_url}/camera" if tunnel_url else f"https://{lan_ip}:8000/camera"
-    phone_url = f"{base_url}#t={token}"
+
+    # Never generate https://192.168.x.x unless a local SSL certificate actually exists
+    # for self-signed mode. Plain HTTP on port 8000 cannot serve HTTPS.
+    cert_file = settings.BASE_DIR / "run" / "cert.pem"
+    if tunnel_url:
+        phone_url = f"{tunnel_url}/camera#t={token}"
+    elif cert_file.exists():
+        phone_url = f"https://{lan_ip}:{settings.PORT}/camera#t={token}"
+    else:
+        phone_url = None
 
     return {
         "lan_ip": lan_ip,

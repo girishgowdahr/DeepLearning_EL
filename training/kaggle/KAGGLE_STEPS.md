@@ -13,9 +13,14 @@ Follow these numbered steps to train both models (**YOLO11n** and **MobileNetV2 
 
 ---
 
-## Step 1: Open Kaggle & Create Notebook
+## Step 1: Open Kaggle & Import Notebook
 1. Log into [kaggle.com](https://www.kaggle.com) with your account.
 2. Go to [kaggle.com/code](https://www.kaggle.com/code) and click **"New Notebook"**.
+3. In the notebook editor, click **File $\rightarrow$ Import Notebook**, select the **Upload** tab, and upload:
+   ```
+   training/kaggle/ForestGuard_AI_Complete_Training.ipynb
+   ```
+   *(Alternatively, you can copy-paste the code from `training/kaggle/forestguard_kaggle.py` into empty cells).*
 
 ---
 

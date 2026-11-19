@@ -37,13 +37,21 @@ $env:FG_PHONE_TOKEN = [Convert]::ToBase64String($bytes).TrimEnd("=").Replace("+"
 Remove-Item "run\phone_token.txt" -ErrorAction SilentlyContinue
 
 # 2. Check for Cloudflare Tunnel
+$cloudflaredCmd = "cloudflared"
 $cloudflared = Get-Command "cloudflared" -ErrorAction SilentlyContinue
+if (-not $cloudflared) {
+    $localBinary = Join-Path (Get-Location) "run\cloudflared.exe"
+    if (Test-Path $localBinary) {
+        $cloudflared = Get-Item $localBinary
+        $cloudflaredCmd = $localBinary
+    }
+}
 $tunnelProcess = $null
 
 if ($cloudflared -and -not $SelfSigned) {
     Write-Host "Starting Cloudflare Quick Tunnel for Phone Camera HTTPS..." -ForegroundColor Yellow
     $logFile = "run\cloudflared.log"
-    $tunnelProcess = Start-Process -FilePath "cloudflared" -ArgumentList "tunnel --url http://localhost:8000" -RedirectStandardError $logFile -PassThru -WindowStyle Hidden
+    $tunnelProcess = Start-Process -FilePath $cloudflaredCmd -ArgumentList "tunnel --url http://localhost:8000" -RedirectStandardError $logFile -RedirectStandardOutput $logFile -PassThru -WindowStyle Hidden
     
     # Wait for tunnel URL
     $foundUrl = $null

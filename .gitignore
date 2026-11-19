@@ -42,3 +42,8 @@ run/
 Thumbs.db
 .vscode/
 .idea/
+
+# TLS material and phone-camera secrets
+*.pem
+*.key
+run/

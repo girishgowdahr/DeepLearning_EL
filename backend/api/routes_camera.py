@@ -3,12 +3,39 @@ import time
 import asyncio
 from pydantic import BaseModel
 from typing import Optional
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, HTTPException, Request, Header
 from fastapi.responses import StreamingResponse
 from backend.services.camera_worker import camera_worker
 from backend.services.pipeline import pipeline
+from backend.services.security import is_remote, verify_phone_token
+from backend.database import db
 
 router = APIRouter()
+
+
+def get_phone_config() -> dict:
+    """Streaming parameters the phone page should use (clamped to safe ranges)."""
+    saved = db.get_all_settings()
+
+    def clamp(value, lo, hi, default):
+        try:
+            return max(lo, min(hi, float(value)))
+        except (TypeError, ValueError):
+            return default
+
+    return {
+        "send_width": int(clamp(saved.get("send_width", 640), 320, 960, 640)),
+        "jpeg_quality": round(clamp(saved.get("jpeg_quality", 0.6), 0.3, 0.9, 0.6), 2),
+        "fps_cap": int(clamp(saved.get("inference_fps_cap", 5), 1, 10, 5)),
+    }
+
+
+@router.get("/phone/config")
+def phone_config(request: Request, x_fg_token: str | None = Header(default=None)):
+    """Minimal, token-protected config for the phone page (the only /api route remote devices may call)."""
+    if is_remote(request.scope) and not verify_phone_token(x_fg_token):
+        raise HTTPException(status_code=401, detail="Invalid or missing access token.")
+    return get_phone_config()
 
 class CameraStartRequest(BaseModel):
     source: str = "webcam"  # "ip", "webcam", "browser"

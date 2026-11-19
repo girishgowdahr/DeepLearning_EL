@@ -66,3 +66,20 @@ This guide provides a step-by-step presentation script and troubleshooting instr
 | No siren sound plays on threat detection | Browser audio autoplay blocked | Click the **Enable Sound** button in the top header once to unlock the Web Audio API context. |
 | Video stream appears laggy / low FPS | Heavy background apps competing for CPU | Close other browser tabs and heavy apps. The pipeline is designed to maintain ~3–5 FPS on CPU. |
 | Status shows *"Model Unavailable"* | Weights missing from `model_weights/` | Place `cnn_mobilenetv2.onnx` and `yolo_best.pt` in `model_weights/` and click **Reload Model Files** in Settings. |
+
+
+## 3. Phone camera test procedure (Android Chrome)
+
+1. Laptop, PowerShell, repo root: `.\scripts\run_demo.ps1` (needs `winget install Cloudflare.cloudflared` once).
+2. Wait for the green **PHONE CAMERA STREAM URL** block. Open `http://localhost:8000/live` on the laptop; click **Enable Sound**.
+3. On the phone (Chrome): scan the QR on the Live Camera page. Do not type the token by hand.
+4. Tap **Start Camera**, then **Allow**. Expect: Camera ready -> Connecting -> `N FPS - LIVE`.
+5. Laptop: status chip shows **Android phone - Streaming**, annotated feed appears.
+6. Point the phone at a fire image and a normal forest image on a screen; check the decision changes (needs trained weights).
+7. Failure checks: Stop; airplane mode 10 s (expect *Reconnecting*, then *Streaming*); block camera permission in Chrome site settings
+   (expect the permission message); lock screen 30 s (note what happens).
+8. Tunnel does not load (college Wi-Fi): switch the laptop to your phone hotspot and rerun, or `.\scripts\run_demo.ps1 -SelfSigned`
+   (same Wi-Fi, tap Advanced > Proceed; laptop dashboard is then `https://localhost:8000`), or use the IP Webcam app.
+9. Finish: Ctrl+C in the PowerShell window. The tunnel URL and token die with it.
+
+Laptop webcam stays available as the fallback: Live Camera > source **Laptop webcam**.

@@ -1,13 +1,14 @@
 import logging
 from contextlib import asynccontextmanager
 from pathlib import Path
-from fastapi import FastAPI, Request
+from fastapi import FastAPI, Request, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 from fastapi.responses import FileResponse
 from backend.config import settings
 from backend.database.db import init_db
 from backend.models.model_registry import registry
+from backend.services.security import RemoteAccessGuard
 from backend.api import routes_health, routes_detect, routes_camera, routes_data, routes_settings, ws
 
 logging.basicConfig(
@@ -33,14 +34,21 @@ app = FastAPI(
     lifespan=lifespan
 )
 
-# CORS Middleware
+# CORS Middleware: same-origin by default (the dashboard and the phone page are both
+# served from this app, and Vite dev proxies /api and /ws). Only explicit origins from
+# CORS_ORIGINS are allowed; no wildcard.
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # Permits localhost Vite dev and tunneled domains
+    allow_origins=settings.CORS_ORIGINS,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+# Remote-access guard (added last = outermost). Requests arriving through a public
+# tunnel or from another device are limited to the phone page and the token-protected
+# /ws/stream; the dashboard, API, history, snapshots and docs stay laptop-only.
+app.add_middleware(RemoteAccessGuard)
 
 # Include API Routers
 app.include_router(routes_health.router, prefix="/api", tags=["Health"])
@@ -59,15 +67,18 @@ frontend_dist = settings.BASE_DIR / "frontend" / "dist"
 if frontend_dist.exists() and (frontend_dist / "index.html").exists():
     app.mount("/assets", StaticFiles(directory=str(frontend_dist / "assets")), name="assets")
     
+    _frontend_root = frontend_dist.resolve()
+
     @app.get("/{full_path:path}")
     async def serve_spa(full_path: str, request: Request):
-        # Don't intercept API, WS, or results routes
-        if full_path.startswith("api/") or full_path.startswith("ws/") or full_path.startswith("results/"):
-            return None
-        file_candidate = frontend_dist / full_path
-        if file_candidate.is_file():
-            return FileResponse(str(file_candidate))
-        return FileResponse(str(frontend_dist / "index.html"))
+        # Unknown API / WS / results paths are real 404s, not the SPA shell
+        if full_path.startswith(("api/", "ws/", "results/")):
+            raise HTTPException(status_code=404, detail="Not found")
+        # Only serve files that resolve inside frontend/dist (blocks ../ traversal)
+        candidate = (_frontend_root / full_path).resolve()
+        if candidate.is_file() and candidate.is_relative_to(_frontend_root):
+            return FileResponse(str(candidate))
+        return FileResponse(str(_frontend_root / "index.html"))
 
 if __name__ == "__main__":
     import uvicorn

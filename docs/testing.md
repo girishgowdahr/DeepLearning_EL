@@ -50,3 +50,36 @@ All 9 core behavioral specifications of the fusion engine are verified using an 
   - YOLO Nano (Ultralytics CPU, 416×416): **140–180 ms**
   - End-to-End Pipeline Latency: **~195 ms**
 - **Observed Stream Frame Rate**: **3.5–5.0 FPS** (Fluid and responsive for surveillance).
+
+
+## 4. Mobile camera (Android phone over HTTPS)
+
+**Status legend:** VERIFIED = executed here with output seen. FAKE-DEVICE = executed in desktop Chromium with
+a synthetic camera (`--use-fake-device-for-media-stream`); proves the page, protocol and recovery logic, **not**
+a real Android phone. PENDING-PHONE = needs the real phone (procedure in `docs/demo_guide.md`).
+
+| Check | Result | Evidence |
+|---|---|---|
+| Original backend tests still pass | VERIFIED | 15/15 before changes |
+| New backend tests (guard, token, limits, watchdog, replace) | VERIFIED | 29 new, suite 44 passed |
+| Helper unit tests (error mapping, backoff, token parse, WSS choice, close codes) | VERIFIED | `node --test`, 7 passed |
+| Frontend production build | VERIFIED | `npm run build` |
+| Real uvicorn: tunnel-style request to `/api/*`, `/docs`, traversal, LAN peer | VERIFIED | 403 each; local `/api/health` 200 |
+| Real uvicorn: `/ws/stream` no token / wrong token / good token | VERIFIED | close 4401, 4401, `auth_ok` |
+| Real uvicorn: remote `/ws/events` | VERIFIED | HTTP 403 |
+| Token not written to server log | VERIFIED | 0 occurrences |
+| Phone page streams, shows `5 FPS - LIVE`, video playing, no horizontal scroll at 390 px | FAKE-DEVICE | screenshots in `results/screenshots/mobile_camera_fake_device/` |
+| Token removed from address bar after load | FAKE-DEVICE | |
+| Permission denied shows actionable message | FAKE-DEVICE | `getUserMedia` rejected with `NotAllowedError` |
+| Server restart: phone shows *Reconnecting (attempt n)*, camera stays on, auto-recovers to *Streaming* | FAKE-DEVICE | |
+| Clean Stop: server status `connected:false`, no disconnect alert | FAKE-DEVICE | |
+| Dashboard Live Camera: Waiting -> Streaming -> Disconnected; annotated image 640 px wide | FAKE-DEVICE | |
+| Dashboard page text does not show the token | FAKE-DEVICE | |
+| Round-trip latency over loopback (fake frames, CPU, models unavailable) | measured | ~100 ms per frame (server pacing floor is 100 ms). Not representative of a phone over a tunnel |
+| Real Android Chrome: rear camera, permission prompt, streaming, Wi-Fi drop, screen lock, 2-3 min stability | **PENDING-PHONE** | |
+| Cloudflare Quick Tunnel end to end (`cloudflared`) | **PENDING** | not installed here |
+| `run_demo.ps1` execution | **PENDING** | PowerShell unavailable here; script not executed |
+| CNN/YOLO predictions on live phone frames | **PENDING** | no trained weights in this environment |
+
+Not covered by the fake-device test: a real rear camera, real mobile network jitter, Android background throttling,
+the Wake Lock API (denied in headless Chromium, handled as a warning).

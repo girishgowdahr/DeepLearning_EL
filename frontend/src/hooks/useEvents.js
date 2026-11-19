@@ -5,6 +5,7 @@ export function useEvents() {
   const [isConnected, setIsConnected] = useState(false);
   const [latestDetection, setLatestDetection] = useState(null);
   const [activeAlert, setActiveAlert] = useState(null);
+  const [cameraEvent, setCameraEvent] = useState(null);
   const [soundEnabled, setSoundEnabled] = useState(() => {
     return localStorage.getItem('fg_sound_enabled') !== 'false';
   });
@@ -42,6 +43,8 @@ export function useEvents() {
           const data = JSON.parse(event.data);
           if (data.type === 'detection') {
             setLatestDetection(data.payload);
+          } else if (data.type === 'camera') {
+            setCameraEvent(data.payload);
           } else if (data.type === 'alert') {
             const alert = data.payload;
             setActiveAlert(alert);
@@ -85,6 +88,7 @@ export function useEvents() {
   return {
     isConnected,
     latestDetection,
+    cameraEvent,
     activeAlert,
     dismissAlert: () => setActiveAlert(null),
     soundEnabled,

@@ -106,7 +106,12 @@ def get_network_info():
         except Exception:
             pass
 
-    phone_url = f"{tunnel_url}/camera" if tunnel_url else f"https://{lan_ip}:8000/camera"
+    # The access token goes in the URL fragment (#t=...), which browsers never send to the
+    # server, so it does not appear in uvicorn / Cloudflare logs.
+    from backend.services.security import get_phone_token
+    token = get_phone_token()
+    base_url = f"{tunnel_url}/camera" if tunnel_url else f"https://{lan_ip}:8000/camera"
+    phone_url = f"{base_url}#t={token}"
 
     return {
         "lan_ip": lan_ip,

@@ -5,7 +5,7 @@ import { api } from '../api/client';
 import { useEvents } from '../hooks/useEvents';
 
 export function LiveCamera() {
-  const { latestDetection } = useEvents();
+  const { latestDetection, cameraEvent } = useEvents();
   const [networkInfo, setNetworkInfo] = useState(null);
   const [copied, setCopied] = useState(false);
   const [ipUrl, setIpUrl] = useState('http://192.168.1.100:8080/video');
@@ -22,6 +22,26 @@ export function LiveCamera() {
   }, []);
 
   const phoneUrl = networkInfo?.phone_camera_url || `https://${window.location.hostname}:8000/camera`;
+  // Show the link without the secret token; the QR code and Copy button carry the full link.
+  const phoneUrlDisplay = phoneUrl.replace(/#t=.*$/, '#t=••••••••');
+  const isTunnel = Boolean(networkInfo?.is_tunnel_active);
+
+  // Phone connection state, driven by /ws/events camera events + polled /api/camera/status
+  const phoneActive = cameraStatus?.source === 'browser';
+  let phoneState = 'waiting';
+  if (cameraEvent && cameraEvent.source === 'phone_camera' && cameraEvent.connected === false && !(phoneActive && cameraStatus?.connected)) {
+    phoneState = 'disconnected';
+  } else if (phoneActive && cameraStatus?.connected) {
+    phoneState = 'streaming';
+  } else if (phoneActive && cameraStatus && !cameraStatus.connected && cameraStatus.last_frame_age_s < 999) {
+    phoneState = 'disconnected';
+  }
+  const phoneBadge = {
+    waiting: { text: 'Waiting for phone camera…', color: 'var(--text-muted)' },
+    streaming: { text: 'Android phone · Streaming', color: 'var(--color-green)' },
+    disconnected: { text: 'Android phone · Disconnected / reconnecting', color: 'var(--color-orange)' },
+  }[phoneState];
+  const sourceLabel = { browser: 'Android phone (primary)', webcam: 'Laptop webcam (fallback)', ip: 'IP camera', none: 'None' }[cameraStatus?.source || 'none'] || cameraStatus?.source;
 
   const handleCopyUrl = () => {
     navigator.clipboard.writeText(phoneUrl);
@@ -90,7 +110,7 @@ export function LiveCamera() {
                 <span style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>{reason}</span>
               </div>
               <div style={{ fontFamily: 'var(--font-mono)', fontSize: '0.82rem', color: 'var(--text-muted)' }}>
-                {latestDetection?.fps ? `${latestDetection.fps} FPS` : 'Stream Live'}
+                {sourceLabel && sourceLabel !== 'None' ? `${sourceLabel} · ` : ''}{latestDetection?.fps ? `${latestDetection.fps} FPS` : 'No frames yet'}
               </div>
             </div>
           </div>
@@ -174,9 +194,17 @@ export function LiveCamera() {
               <Smartphone size={18} color="var(--color-green)" />
               Connect Phone Camera
             </h3>
-            <p style={{ fontSize: '0.78rem', color: 'var(--text-muted)', marginBottom: '14px' }}>
-              Scan with your Android phone to open the HTTPS camera stream:
+            <p style={{ fontSize: '0.78rem', color: 'var(--text-muted)', marginBottom: '10px' }}>
+              Primary source: <strong>Android phone</strong>. Scan with the phone to open the HTTPS camera page, then tap Start Camera.
             </p>
+            <div data-testid="phone-status" style={{ display: 'inline-block', padding: '4px 12px', borderRadius: '999px', fontSize: '0.78rem', fontWeight: 600, marginBottom: '12px', backgroundColor: 'var(--bg-subtle)', color: phoneBadge.color }}>
+              {phoneBadge.text}
+            </div>
+            {!isTunnel && (
+              <p style={{ fontSize: '0.74rem', color: 'var(--color-orange)', marginBottom: '10px' }}>
+                No HTTPS tunnel detected. Start <code>scripts\run_demo.ps1</code> (tunnel) or <code>-SelfSigned</code>; plain http:// cannot open the phone camera.
+              </p>
+            )}
 
             <div style={{ padding: '14px', background: '#fff', borderRadius: '10px', display: 'inline-block', margin: '0 auto 14px' }}>
               <QRCodeSVG value={phoneUrl} size={150} />
@@ -184,7 +212,7 @@ export function LiveCamera() {
 
             <div style={{ display: 'flex', alignItems: 'center', gap: '6px', background: 'var(--bg-subtle)', padding: '6px 10px', borderRadius: '6px', fontSize: '0.75rem', fontFamily: 'var(--font-mono)', overflow: 'hidden' }}>
               <span style={{ flex: 1, textOverflow: 'ellipsis', overflow: 'hidden', whiteSpace: 'nowrap' }}>
-                {phoneUrl}
+                {phoneUrlDisplay}
               </span>
               <button onClick={handleCopyUrl} style={{ color: copied ? 'var(--color-green)' : 'var(--text-muted)' }}>
                 {copied ? <Check size={16} /> : <Copy size={16} />}

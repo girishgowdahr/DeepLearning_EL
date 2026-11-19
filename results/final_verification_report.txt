@@ -1,0 +1,63 @@
+﻿================================================================================
+🌲 FORESTGUARD AI: END-TO-END FINAL SYSTEM VERIFICATION REPORT
+================================================================================
+Generated At:        2026-11-19 14:55:11 (UTC+05:30)
+Project Workspace:   D:\RVCE\Sem3\Deep Learning EL\ForestGuard-AI
+Git Branch:          main
+Git Commit:          19ad21d43b7725cd7bcddd99ccbeda2d65c17d80
+Python Environment:  Python 3.11.3 (D:\RVCE\Sem3\Deep Learning EL\ForestGuard-AI\.venv\Scripts\python.exe)
+Node Environment:    Node v24.21.0 | npm 11.19.0
+Overall Status:      PASSED_DEGRADED_READY
+Summary Note:        All test suites passed cleanly. Degraded fallback verified. System is ready for Kaggle weights.
+
+--------------------------------------------------------------------------------
+1. MODEL WEIGHTS & INFERENCE READINESS AUDIT
+--------------------------------------------------------------------------------
+CNN Classifier:      cnn_mobilenetv2.onnx
+  - Installed:       NO (Pending Kaggle weights)
+  - File Size:       N/A
+  - SHA-256 Digest:  NOT_INSTALLED
+YOLO Detector:       yolo_best.pt
+  - Installed:       NO (Pending Kaggle weights)
+  - File Size:       N/A
+  - SHA-256 Digest:  NOT_INSTALLED
+Inference State:     DEGRADED SAFE MODE (MODEL_UNAVAILABLE state active; zero false NO_FIRE detections; awaiting Kaggle weights)
+
+--------------------------------------------------------------------------------
+2. AUTOMATED EXECUTION STAGES & PROCESS EXIT CODES
+--------------------------------------------------------------------------------
+Stage Name                   | Exit Code  | Result Status
+--------------------------------------------------------------------------------
+1. Artifact Installation     | 0          | SKIPPED (No ZIP files provided or found in root)
+2. Model Validation Audit    | 0          | DEGRADED_MODE_PASSED (Exit Code: 0 - MODEL_UNAVAILABLE verified)
+3. Backend Pytest Suite      | 0          | PASSED (Exit Code: 0)
+4. Frontend Unit Tests       | 0          | PASSED (Exit Code: 0)
+5. Frontend Production Build | 0          | PASSED (Exit Code: 0 - dist/ compiled)
+6. Paper Metrics Sync        | 0          | PASSED (Exit Code: 0)
+
+--------------------------------------------------------------------------------
+3. INSTALLED ARTIFACTS INVENTORY & CHECKSUMS (model_weights/)
+--------------------------------------------------------------------------------
+No model weight files currently installed in model_weights/.
+
+--------------------------------------------------------------------------------
+4. PENDING PHYSICAL-DEVICE & RUNTIME VERIFICATION CHECKS
+--------------------------------------------------------------------------------
+The following operational criteria require physical device interaction and
+cannot be evaluated in CI or headless environments:
+
+[ ] 1. Cloudflare Quick Tunnel Provisioning:
+       Run scripts/run_demo.ps1 and confirm *.trycloudflare.com HTTPS URL generation.
+[ ] 2. QR Code Authentication on Android Mobile:
+       Scan the generated QR code on mobile device; confirm token-in-hash (#t=...) auth.
+[ ] 3. Camera Permission & WebRTC/WSS Ingestion:
+       Grant camera permission in mobile Chrome; verify live WebSocket streaming.
+[ ] 4. Real-time Ingestion Latency & Frame Rate:
+       Verify sub-second roundtrip latency and >= 15 FPS frame ingestion on dashboard.
+[ ] 5. Live Bounding Box & HUD Synchronization:
+       Point camera at fire/smoke imagery; verify bounding box and confidence render.
+[ ] 6. Browser Siren & Alarm Escalation:
+       Verify Web Audio siren sounds upon temporal confirmation (FIRE_CONFIRMED).
+[ ] 7. Network Disconnect & Reconnect Resilience:
+       Toggle mobile flight mode; verify automatic reconnect backoff without server crash.
+================================================================================

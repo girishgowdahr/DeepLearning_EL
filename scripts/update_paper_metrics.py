@@ -1,17 +1,44 @@
 """
-ForestGuard AI — Paper Metrics Synchronizer
-============================================
+ForestGuard AI — Paper Metrics Synchronizer & LaTeX Finalizer
+=============================================================
 Safely updates docs/paper/forestguard_paper.tex and forestguard_paper.md
 with genuine evaluation metrics from results/metrics/ once available.
-Never fabricates results.
+Compiles the LaTeX document to PDF if compiler tools (pdflatex/xelatex/latexmk) are installed.
+Keeps unavailable metrics marked PENDING. Never fabricates results.
 """
 
 import sys
+import os
 import json
 import re
+import shutil
+import subprocess
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
+
+def try_compile_latex(tex_path: Path) -> bool:
+    """Attempts to compile the LaTeX paper if a compiler is found in PATH."""
+    compiler = shutil.which("pdflatex") or shutil.which("xelatex") or shutil.which("latexmk")
+    if not compiler:
+        print("ℹ Notice: LaTeX compiler (pdflatex / xelatex / latexmk) not installed on local host.")
+        print("   LaTeX source forestguard_paper.tex is synchronized and ready for Overleaf or cloud compilation.")
+        return False
+
+    try:
+        print(f"📄 Compiling LaTeX paper with {Path(compiler).name}...")
+        cmd = [compiler, "-interaction=nonstopmode", f"-output-directory={tex_path.parent}", str(tex_path)]
+        res = subprocess.run(cmd, capture_output=True, text=True, timeout=120)
+        pdf_path = tex_path.with_suffix(".pdf")
+        if pdf_path.exists():
+            print(f"✅ Successfully compiled IEEE paper to PDF: {pdf_path}")
+            return True
+        else:
+            print(f"⚠️ Notice: LaTeX compilation finished without generating PDF output.")
+            return False
+    except Exception as e:
+        print(f"⚠️ LaTeX compilation error: {e}")
+        return False
 
 def main():
     yolo_metrics_path = ROOT / "results" / "metrics" / "yolo_metrics.json"
@@ -23,6 +50,9 @@ def main():
         print("⚠️ Notice: Genuine training metrics not found in results/metrics/.")
         print("   forestguard_paper.tex remains marked as PENDING.")
         print("   Metrics will be populated automatically when Kaggle artifacts are installed.")
+        # Attempt compilation of draft if requested
+        if "--compile" in sys.argv:
+            try_compile_latex(paper_tex_path)
         return 0
 
     print("📄 Found genuine model evaluation metrics:")
@@ -34,7 +64,7 @@ def main():
     with open(cnn_metrics_path, "r", encoding="utf-8") as f:
         cnn = json.load(f)
 
-    # Extract metrics
+    # Extract genuine metrics
     cnn_acc = f"{float(cnn.get('test_accuracy', cnn.get('accuracy', 0.0))) * 100:.1f}\\%"
     cnn_prec = f"{float(cnn.get('classes', {}).get('fire', {}).get('precision', 0.0)):.3f}"
     cnn_rec = f"{float(cnn.get('classes', {}).get('fire', {}).get('recall', 0.0)):.3f}"
@@ -81,6 +111,10 @@ def main():
         )
         paper_md_path.write_text(md_content, encoding="utf-8")
         print(f"✅ Updated Markdown paper: {paper_md_path}")
+
+    # Compile LaTeX if compiler is available
+    if paper_tex_path.exists():
+        try_compile_latex(paper_tex_path)
 
     return 0
 

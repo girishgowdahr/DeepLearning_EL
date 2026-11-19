@@ -74,6 +74,9 @@ def annotate_frame(
     elif status == "UNCERTAIN":
         status_color = COLOR_AMBER
         status_label = "UNCERTAIN"
+    elif status == "MODEL_UNAVAILABLE":
+        status_color = (130, 130, 130)
+        status_label = "MODELS UNAVAILABLE"
     else:
         status_color = COLOR_GREEN
         status_label = "NORMAL (NO FIRE)"

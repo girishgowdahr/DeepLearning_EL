@@ -125,6 +125,10 @@ class InferencePipeline:
             top_class = "fire"
             top_conf = cnn_res.get("confidence", 0)
             db.increment_counter("fire_detections", 1)
+        elif state == DecisionState.MODEL_UNAVAILABLE:
+            # Both models unavailable: do not count as negative classification
+            top_class = "unavailable"
+            top_conf = 0.0
         else:
             db.increment_counter("no_fire_classifications", 1)
 

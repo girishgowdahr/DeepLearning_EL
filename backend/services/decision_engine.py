@@ -8,6 +8,7 @@ class DecisionState:
     POSSIBLE_FIRE = "POSSIBLE_FIRE"
     SMOKE_CONFIRMED = "SMOKE_CONFIRMED"
     FIRE_CONFIRMED = "FIRE_CONFIRMED"
+    MODEL_UNAVAILABLE = "MODEL_UNAVAILABLE"
 
 class DecisionEngine:
     """
@@ -84,7 +85,7 @@ class DecisionEngine:
 
         # Handle Model Degraded Modes
         if not cnn_available and not yolo_available:
-            return "NO_FIRE", "Both CNN and YOLO models unavailable"
+            return DecisionState.MODEL_UNAVAILABLE, "Both CNN and YOLO models unavailable"
 
         if not cnn_available:
             if yolo_fire >= self.yolo_conf_fire:
@@ -143,17 +144,17 @@ class DecisionEngine:
         self.window.append((candidate, frame_reason, now))
 
         # Count occurrences in sliding window
-        counts = {"FIRE": 0, "SMOKE": 0, "POSSIBLE_FIRE": 0, "UNCERTAIN": 0, "NO_FIRE": 0}
+        counts = {"FIRE": 0, "SMOKE": 0, "POSSIBLE_FIRE": 0, "UNCERTAIN": 0, "NO_FIRE": 0, DecisionState.MODEL_UNAVAILABLE: 0}
         for state, _, _ in self.window:
             counts[state] = counts.get(state, 0) + 1
 
         total_frames = len(self.window)
 
         # Determine confirmed status
-        confirmed_state = DecisionState.NO_FIRE
-        confirmed_reason = "No threat detected"
-
-        if counts["FIRE"] >= self.confirm_frames:
+        if counts.get(DecisionState.MODEL_UNAVAILABLE, 0) == total_frames and total_frames > 0:
+            confirmed_state = DecisionState.MODEL_UNAVAILABLE
+            confirmed_reason = "Both models unavailable: waiting for weights installation"
+        elif counts["FIRE"] >= self.confirm_frames:
             confirmed_state = DecisionState.FIRE_CONFIRMED
             confirmed_reason = f"FIRE confirmed in {counts['FIRE']}/{total_frames} frames ({frame_reason})"
         elif counts["SMOKE"] >= self.confirm_frames:
@@ -165,9 +166,15 @@ class DecisionEngine:
         elif counts["UNCERTAIN"] >= self.confirm_frames:
             confirmed_state = DecisionState.UNCERTAIN
             confirmed_reason = f"UNCERTAIN / Model Disagreement in {counts['UNCERTAIN']}/{total_frames} frames ({frame_reason})"
-        elif candidate != "NO_FIRE":
+        elif candidate != "NO_FIRE" and candidate != DecisionState.MODEL_UNAVAILABLE:
             confirmed_state = DecisionState.UNCERTAIN
             confirmed_reason = f"Awaiting temporal confirmation ({candidate} {counts[candidate]}/{self.confirm_frames})"
+        elif candidate == DecisionState.MODEL_UNAVAILABLE:
+            confirmed_state = DecisionState.MODEL_UNAVAILABLE
+            confirmed_reason = "Models unavailable: waiting for weights installation"
+        else:
+            confirmed_state = DecisionState.NO_FIRE
+            confirmed_reason = "No threat detected"
 
         # Event lifecycle & alert trigger calculation
         should_alert = False

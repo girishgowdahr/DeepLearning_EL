@@ -240,3 +240,17 @@ def test_model_unavailable_fallback():
         )
     assert res["status"] == DecisionState.POSSIBLE_FIRE
     assert "YOLO unavailable" in res["reason"]
+
+
+def test_both_models_unavailable_produces_model_unavailable():
+    clock = MockClock()
+    engine = DecisionEngine(time_fn=clock.get_time)
+    res = engine.update(
+        cnn_result=None,
+        yolo_result=None,
+        cnn_available=False,
+        yolo_available=False
+    )
+    assert res["status"] == DecisionState.MODEL_UNAVAILABLE
+    assert "models unavailable" in res["reason"].lower()
+    assert res["should_alert"] is False

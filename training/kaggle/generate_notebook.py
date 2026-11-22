@@ -1,7 +1,7 @@
 """
 Generator for ForestGuard_AI_Complete_Training.ipynb
 Constructs an audited, fully automated, leak-free, reproducible Kaggle Jupyter Notebook.
-Supports dynamic class resolution for sayedgamal99/smoke-fire-detection-yolo-d-fire-dataset
+Supports dynamic class resolution for sayedgamal99/smoke-fire-detection-yolo
 as well as alternative D-Fire mirrors, ensuring strict compatibility with the FastAPI backend.
 """
 
@@ -40,7 +40,7 @@ def create_notebook():
 ### Academic Prototype: Early Wildfire & Smoke Detection Decision System
 **Architectures**: Ultralytics YOLO11 Nano (Bounding Box Detector) + MobileNetV2 CNN (Binary Classifier)  
 **Target Platform**: Kaggle Free GPU (**2 × NVIDIA Tesla T4** or **1 × Tesla T4**)  
-**Dataset**: `sayedgamal99/smoke-fire-detection-yolo-d-fire-dataset` (or D-Fire mirror)  
+**Dataset**: `sayedgamal99/smoke-fire-detection-yolo` (or D-Fire mirror)  
 **Outputs**: `yolo_artifacts.zip` & `cnn_artifacts.zip` (ready for one-click download to your laptop)
 
 ---
@@ -50,9 +50,9 @@ def create_notebook():
 2. **Internet**: Toggle **Internet** to **ON** (required to fetch pretrained base weights).
 3. **Dataset**: Click **+ Add Input** (top right) $\\rightarrow$ Search for:
    ```
-   smoke-fire-detection-yolo-d-fire-dataset
+   smoke-fire-detection-yolo
    ```
-   Add **`sayedgamal99/smoke-fire-detection-yolo-d-fire-dataset`** (License: CC0 / CC BY 4.0).
+   Add **`sayedgamal99/smoke-fire-detection-yolo`** (License: CC0 / CC BY 4.0).
 4. **Execution Mode**:
    - `SMOKE_MODE = True`: 1-epoch quick pipeline verification (~3–5 minutes) to test GPU, tensor flow, and packaging.
    - `SMOKE_MODE = False`: Full production training (~45–60 minutes) yielding IEEE research-grade weights.
@@ -150,7 +150,7 @@ print("✅ All dependencies verified successfully.")"""))
     # CELL 4: Dynamic Dataset Discovery & Early Gate
     # -------------------------------------------------------------
     cells.append(md_cell("""## 3. Dataset Discovery & Validation Gate
-Discovers the attached dataset in `/kaggle/input`. Specifically prioritizes `sayedgamal99/smoke-fire-detection-yolo-d-fire-dataset` and other D-Fire mirrors. Halts execution early with clear instructions if missing."""))
+Discovers the attached dataset in `/kaggle/input`. Specifically prioritizes `sayedgamal99/smoke-fire-detection-yolo` and other D-Fire mirrors. Halts execution early with clear instructions if missing."""))
 
     cells.append(code_cell("""def discover_dataset() -> Path:
     kaggle_input = Path("/kaggle/input")
@@ -160,11 +160,14 @@ Discovers the attached dataset in `/kaggle/input`. Specifically prioritizes `say
             return local_cand
         raise FileNotFoundError("Could not find /kaggle/input or local datasets/DFire folder.")
 
-    # 1. Search for sayedgamal99 dataset specifically
+    # 1. Search for sayedgamal99 / smoke-fire-detection-yolo dataset specifically
     for cand in kaggle_input.glob("**/*sayedgamal99*"):
         if cand.is_dir():
             return cand
-    for cand in kaggle_input.glob("**/*d-fire-dataset*"):
+    for cand in kaggle_input.glob("**/*smoke-fire-detection-yolo*"):
+        if cand.is_dir():
+            return cand
+    for cand in kaggle_input.glob("**/*d-fire*"):
         if cand.is_dir():
             return cand
 
@@ -188,8 +191,8 @@ Discovers the attached dataset in `/kaggle/input`. Specifically prioritizes `say
         "❌ DATASET NOT DETECTED IN /kaggle/input!\\n"
         "Please attach the dataset before proceeding:\\n"
         "1. Click '+ Add Input' in the right-hand panel.\\n"
-        "2. Search for: 'smoke-fire-detection-yolo-d-fire-dataset' (sayedgamal99/smoke-fire-detection-yolo-d-fire-dataset)\\n"
-        "   or 'smoke-fire-detection-yolo' (thunguyen1012/smoke-fire-detection-yolo).\\n"
+        "2. Search for: 'smoke-fire-detection-yolo' (sayedgamal99/smoke-fire-detection-yolo)\\n"
+        "   or 'thunguyen1012/smoke-fire-detection-yolo'.\\n"
         "3. Click the '+' button to attach it, then rerun this cell."
     )
 
@@ -464,6 +467,11 @@ train_results = yolo_model.train(
 )
 
 save_dir = Path(train_results.save_dir)
+# Epochs actually completed (early stopping / interruption can end before the configured count)
+try:
+    epochs_completed = max(0, sum(1 for _ in open(save_dir / "results.csv", encoding="utf-8")) - 1)
+except Exception:
+    epochs_completed = None
 best_pt_src = save_dir / "weights" / "best.pt"
 if not best_pt_src.exists():
     best_pt_src = save_dir / "weights" / "last.pt"
@@ -490,7 +498,9 @@ yolo_metrics = {
     "mAP50-95": round(float(val_res.box.map), 4),
     "precision": round(float(val_res.box.mp), 4),
     "recall": round(float(val_res.box.mr), 4),
-    "epochs_trained": yolo_epochs,
+    "epochs_configured": yolo_epochs,
+    "epochs_trained": epochs_completed,
+    "metrics_split": "test (held-out)",
     "image_size": yolo_imgsz,
     "classes": {
         "fire": {

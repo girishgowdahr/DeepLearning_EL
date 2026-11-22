@@ -13,7 +13,7 @@ This directory contains the automated training pipeline for **ForestGuard AI**:
 | :--- | :--- | :--- |
 | **Hardware** | **2 × NVIDIA Tesla T4** (or 1 × T4) | Free on Kaggle (30 GPU hours/week) |
 | **Internet** | **Enabled** | Required to fetch base weights (`yolo11n.pt`, ImageNet) |
-| **Primary Dataset** | `sayedgamal99/smoke-fire-detection-yolo-d-fire-dataset` | CC0 Public Domain / CC BY 4.0 |
+| **Primary Dataset** | `sayedgamal99/smoke-fire-detection-yolo` | CC0 Public Domain / CC BY 4.0 |
 | **Alternative Mirrors**| `thunguyen1012/smoke-fire-detection-yolo` | Fully supported via dynamic class mapping |
 | **Smoke Test Runtime** | **~3–5 minutes** | Quick verification with `SMOKE_MODE = True` |
 | **Full Production Runtime**| **~45–60 minutes** | 30 epochs YOLO + 13 epochs CNN (`SMOKE_MODE = False`) |
@@ -23,7 +23,7 @@ This directory contains the automated training pipeline for **ForestGuard AI**:
 ## 🧠 Dynamic Class Mapping & Architecture Compatibility
 
 Different Kaggle mirrors of D-Fire define class orders differently:
-* `sayedgamal99/smoke-fire-detection-yolo-d-fire-dataset` defines `0: smoke, 1: fire`.
+* `sayedgamal99/smoke-fire-detection-yolo` defines `0: smoke, 1: fire`.
 * Other mirrors define `0: fire, 1: smoke`.
 
 The notebook **dynamically inspects `data.yaml` at runtime** to resolve raw class IDs:
@@ -58,9 +58,9 @@ In the right-hand **Notebook Options / Settings** panel:
 1. In the top right panel, click **"+ Add Input"**.
 2. In the search box, type:
    ```
-   smoke-fire-detection-yolo-d-fire-dataset
+   smoke-fire-detection-yolo
    ```
-3. Locate **`sayedgamal99/smoke-fire-detection-yolo-d-fire-dataset`**.
+3. Locate **`sayedgamal99/smoke-fire-detection-yolo`**.
 4. Click the **"+"** button to attach it to the notebook.
    *The notebook automatically detects the dataset root in `/kaggle/input`, parses `data.yaml`, and verifies train/val/test splits.*
 

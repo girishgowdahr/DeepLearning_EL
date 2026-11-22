@@ -15,7 +15,7 @@ class YOLODetector:
         self.model = None
         self.available = False
         self.last_inference_ms = 0.0
-        self.classes = {0: "fire", 1: "smoke"}
+        self.classes = {0: "smoke", 1: "fire"}
         
         self.load_model()
 
@@ -39,7 +39,7 @@ class YOLODetector:
         bgr_image,
         conf: float = 0.25,
         iou: float = 0.45,
-        imgsz: int = 416
+        imgsz: int = 640
     ) -> list[dict]:
         """
         Runs object detection on a BGR image.

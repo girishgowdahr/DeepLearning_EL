@@ -162,6 +162,8 @@ def verify_yolo_outputs(yolo_dir: Path) -> dict:
                     clean_best = {k.strip(): v.strip() for k, v in best_row.items()}
                     yolo_metrics = {
                         "model": "YOLO11n",
+                        "metrics_split": "VALIDATION (results.csv, best epoch chosen by mAP50) - NOT held-out test; optimistic",
+                        "epochs_trained": len(rows),
                         "best_epoch": int(safe_float(clean_best.get("epoch", len(rows)))),
                         "mAP50": round(safe_float(clean_best.get("metrics/mAP50(B)", clean_best.get("mAP50", 0))), 4),
                         "mAP50-95": round(safe_float(clean_best.get("metrics/mAP50-95(B)", clean_best.get("mAP50-95", 0))), 4),
@@ -174,7 +176,7 @@ def verify_yolo_outputs(yolo_dir: Path) -> dict:
                     }
                     with open(metrics_file, "w", encoding="utf-8") as mf:
                         json.dump(yolo_metrics, mf, indent=2)
-                    print(f"  ✓ Extracted genuine YOLO metrics from {csv_file.name}: mAP50={yolo_metrics['mAP50']}")
+                    print(f"  ⚠ yolo_metrics.json missing: using VALIDATION metrics from {csv_file.name} (not test): mAP50={yolo_metrics['mAP50']}")
         except Exception as e:
             result["errors"].append(f"Error parsing results.csv: {e}")
 

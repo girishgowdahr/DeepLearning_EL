@@ -239,6 +239,10 @@ res = model.train(
 )
 
 save_dir = Path(res.save_dir)
+try:
+    epochs_completed = max(0, sum(1 for _ in open(save_dir / 'results.csv', encoding='utf-8')) - 1)
+except Exception:
+    epochs_completed = None
 best_pt = save_dir / 'weights' / 'best.pt'
 if not best_pt.exists():
     best_pt = save_dir / 'weights' / 'last.pt'
@@ -265,7 +269,9 @@ metrics = {{
     "mAP50-95": float(val_res.box.map),
     "precision": float(val_res.box.mp),
     "recall": float(val_res.box.mr),
-    "epochs_trained": epochs,
+    "epochs_configured": epochs,
+    "epochs_trained": epochs_completed,
+    "metrics_split": "test (held-out)",
     "image_size": imgsz,
     "classes": {{
         "fire": {{

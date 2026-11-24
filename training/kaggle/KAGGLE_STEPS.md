@@ -36,7 +36,7 @@ In the right-hand **Notebook Options / Settings** panel:
 2. Search for: `smoke-fire-detection-yolo`
 3. Look for **`sayedgamal99/smoke-fire-detection-yolo`** (or `thunguyen1012/smoke-fire-detection-yolo`).
 4. Click the **+** button to attach it to the notebook.
-   - *License*: CC0 / CC BY 4.0. Completely free, no permission requests or payments needed.
+   - *License*: not verified; no payment needed to access.
 
 ---
 

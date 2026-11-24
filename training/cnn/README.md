@@ -19,7 +19,7 @@ This guide describes how to train the **MobileNetV2 binary fire classifier** on 
    - Click **"+ Add Input"** (top right).
    - Search for `smoke-fire-detection-yolo` or `dfire`.
    - Select and add **`thunguyen1012/smoke-fire-detection-yolo`** (or `gaiasd/dfire-dataset`).
-   - *License*: Public CC0 / CC BY 4.0. No special approval or payment needed.
+   - *License*: Licence NOT yet verified; check the original D-Fire source before redistribution.
 
 4. **Paste and Run the Script**:
    - Copy the entire contents of [`kaggle_train_cnn.py`](kaggle_train_cnn.py).

@@ -29,10 +29,10 @@ ForestGuard AI resolves these challenges through dual-model fusion: MobileNetV2 
 ---
 
 ## 3. Dataset & Sampling Strategy
-- **Dataset**: D-Fire Dataset (CC0 / CC BY 4.0).
+- **Dataset**: D-Fire Dataset (licence not verified).
 - **YOLO Training Split**: Capped at 6,000 images (`imgsz=640`, 30 epochs) for rapid convergence on free Kaggle T4 GPUs.
 - **CNN Training Split**: Capped at 3,000 images per class (6,000 total). Smoke-only images are strictly excluded to prevent ground truth ambiguity.
-- **Data Leakage**: Zero cross-split leakage; CNN splits strictly mirror YOLO split boundaries.
+- **Split Alignment**: CNN splits strictly mirror YOLO split boundaries (raw dataset cross-split near-duplicate audit not verified locally).
 
 ---
 

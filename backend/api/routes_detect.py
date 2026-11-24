@@ -83,7 +83,7 @@ def _process_video_job(job_id: str, video_path: Path):
                 if pipeline.decision_engine and pipeline.executor:
                     from backend.models.model_registry import registry
                     if registry.yolo.available:
-                        yolo_dets = registry.yolo.predict(resized, conf=pipeline.decision_engine.yolo_conf_fire, imgsz=416)
+                        yolo_dets = registry.yolo.predict(resized, conf=pipeline.decision_engine.yolo_conf_fire, imgsz=640)
                     cnn_res = None
                     if registry.cnn.available:
                         cnn_res = registry.cnn.predict(resized)

@@ -1,5 +1,5 @@
 {
-  "timestamp": "2026-11-19 15:47:20",
+  "timestamp": "2026-11-24 20:43:04",
   "weights_dir": "D:\\RVCE\\Sem3\\Deep Learning EL\\ForestGuard-AI\\model_weights",
   "degradation_audit": {
     "tested": true,
@@ -11,18 +11,108 @@
     "status": "PASSED"
   },
   "cnn_inference": {
-    "status": "PENDING_WEIGHTS",
-    "available": false,
-    "predictions": [],
-    "errors": [],
-    "reason": "Model weight file not found at: D:\\RVCE\\Sem3\\Deep Learning EL\\ForestGuard-AI\\model_weights\\cnn_mobilenetv2.onnx"
+    "status": "PASSED",
+    "available": true,
+    "predictions": [
+      {
+        "benchmark_case": "Clear Forest Canopy",
+        "ground_truth": "no_fire",
+        "prediction": "fire",
+        "confidence": 0.7795,
+        "probabilities": {
+          "fire": 0.7795,
+          "no_fire": 0.2205
+        },
+        "latency_ms": 45.88
+      },
+      {
+        "benchmark_case": "Sunset Hard Negative",
+        "ground_truth": "no_fire",
+        "prediction": "fire",
+        "confidence": 0.9977,
+        "probabilities": {
+          "fire": 0.9977,
+          "no_fire": 0.0023
+        },
+        "latency_ms": 18.35
+      },
+      {
+        "benchmark_case": "Active Wildfire",
+        "ground_truth": "fire",
+        "prediction": "fire",
+        "confidence": 0.9653,
+        "probabilities": {
+          "fire": 0.9653,
+          "no_fire": 0.0347
+        },
+        "latency_ms": 21.59
+      },
+      {
+        "benchmark_case": "Dense Smoke Plume",
+        "ground_truth": "smoke",
+        "prediction": "fire",
+        "confidence": 0.6987,
+        "probabilities": {
+          "fire": 0.6987,
+          "no_fire": 0.3013
+        },
+        "latency_ms": 22.82
+      },
+      {
+        "benchmark_case": "Night Forest Baseline",
+        "ground_truth": "no_fire",
+        "prediction": "fire",
+        "confidence": 0.7511,
+        "probabilities": {
+          "fire": 0.7511,
+          "no_fire": 0.2489
+        },
+        "latency_ms": 23.11
+      }
+    ],
+    "errors": []
   },
   "yolo_inference": {
-    "status": "PENDING_WEIGHTS",
-    "available": false,
-    "predictions": [],
-    "errors": [],
-    "reason": "Model weight file not found at: D:\\RVCE\\Sem3\\Deep Learning EL\\ForestGuard-AI\\model_weights\\yolo_best.onnx"
+    "status": "PASSED",
+    "available": true,
+    "predictions": [
+      {
+        "benchmark_case": "Clear Forest Canopy",
+        "ground_truth": "no_fire",
+        "num_detections": 0,
+        "detections": [],
+        "latency_ms": 7006.27
+      },
+      {
+        "benchmark_case": "Sunset Hard Negative",
+        "ground_truth": "no_fire",
+        "num_detections": 0,
+        "detections": [],
+        "latency_ms": 187.51
+      },
+      {
+        "benchmark_case": "Active Wildfire",
+        "ground_truth": "fire",
+        "num_detections": 0,
+        "detections": [],
+        "latency_ms": 116.67
+      },
+      {
+        "benchmark_case": "Dense Smoke Plume",
+        "ground_truth": "smoke",
+        "num_detections": 0,
+        "detections": [],
+        "latency_ms": 114.82
+      },
+      {
+        "benchmark_case": "Night Forest Baseline",
+        "ground_truth": "no_fire",
+        "num_detections": 0,
+        "detections": [],
+        "latency_ms": 91.1
+      }
+    ],
+    "errors": []
   },
   "honest_disclosure": "No trained model inference claimed without physical weight files. When weights are absent, system operates in verified MODEL_UNAVAILABLE state."
 }

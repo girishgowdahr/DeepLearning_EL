@@ -2,7 +2,7 @@
 ForestGuard AI — Model Inference & Degradation Test Suite
 =========================================================
 Tests CNN ONNX classifier and YOLO object detector inference pipelines:
-  - Verifies class mappings (CNN: 0=fire, 1=no_fire; YOLO: 0=fire, 1=smoke).
+  - Verifies class mappings (CNN: 0=fire, 1=no_fire; YOLO: 0=smoke, 1=fire).
   - Validates tensor dimensions, confidence scores in [0.0, 1.0], and bounding boxes.
   - Tests MODEL_UNAVAILABLE degraded behavior when model weights are missing.
   - Tests multi-modal temporal decision fusion engine state transitions.
@@ -270,8 +270,8 @@ def test_yolo_inference(yolo_path: Path, benchmark_frames: list) -> dict:
         report["available"] = True
         # Audit class mapping
         print(f"  ✓ Verified YOLO Class Mapping: {yolo.classes}")
-        assert yolo.classes.get(0) == "fire", "YOLO class 0 must be 'fire'!"
-        assert yolo.classes.get(1) == "smoke", "YOLO class 1 must be 'smoke'!"
+        assert yolo.classes.get(0) == "smoke", "YOLO class 0 must be 'smoke'!"
+        assert yolo.classes.get(1) == "fire", "YOLO class 1 must be 'fire'!"
 
         # Run inference across benchmark frames
         for bf in benchmark_frames:
@@ -394,7 +394,7 @@ def main():
         "-" * 80,
         f"  Status:             {yolo_report['status']}",
         f"  Weights File:       {yolo_path.name} ({'FOUND' if yolo_path.exists() else 'PENDING KAGGLE ARTIFACTS'})",
-        f"  Class Mapping:      0='fire', 1='smoke'",
+        f"  Class Mapping:      0='smoke', 1='fire'",
         "",
         "4. BENCHMARK TEST PREDICTIONS",
         "-" * 80

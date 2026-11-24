@@ -2,14 +2,17 @@
 
 ## 1. Primary Dataset: D-Fire (Wildfire & Smoke Detection)
 - **Official Repository**: [gaia-solutions-on-demand/DFireDataset](https://github.com/gaiasd/DFireDataset)
-- **Kaggle Mirror**: `thunguyen1012/smoke-fire-detection-yolo` / `gaiasd/dfire-dataset`
-- **License**: CC0 1.0 Universal / Creative Commons Attribution (CC BY 4.0)
+- **Kaggle Mirror**: `sayedgamal99/smoke-fire-detection-yolo` / `thunguyen1012/smoke-fire-detection-yolo` / `gaiasd/dfire-dataset`
+- **License**: NOT VERIFIED. The source repository page states no licence; do not assume CC0 / CC BY. Confirm with the original authors before redistribution.
 - **Task Types**: Object Detection (YOLO format) & Image Classification (Derived)
 - **Total Raw Images**: ~21,000+ frames (surveillance, aerial, time-lapse, nighttime, wilderness)
-- **Classes**:
-  - `0`: `fire` (flames, bonfires, forest fires)
-  - `1`: `smoke` (plumes, wildfire smoke columns)
+- **Classes (YOLO Model)**:
+  - `0`: `smoke` (plumes, wildfire smoke columns)
+  - `1`: `fire` (flames, bonfires, forest fires)
   - Negatives: background scenes without fire and without smoke (forest canopy, mountains, clouds, sky)
+- **Classes (CNN Classifier)**:
+  - `0`: `fire`
+  - `1`: `no_fire` (smoke-only frames excluded)
 
 ---
 

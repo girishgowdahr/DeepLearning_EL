@@ -38,7 +38,7 @@
 ## 3. Dataset Source, License & Kaggle Accessibility
 - **Dataset Name**: D-Fire (Wildfire & Smoke Detection Dataset)
 - **Primary Citation**: de Venâncio et al., 2022 (*"DFire: an image dataset for fire and smoke detection"*)
-- **License**: **CC0 1.0 Universal / Creative Commons Attribution (CC BY 4.0)**
+- **License**: NOT VERIFIED. The source repository page states no licence; do not assume CC0 / CC BY. Confirm with the original authors before redistribution.
 - **Public Kaggle Mirrors**:
   - `thunguyen1012/smoke-fire-detection-yolo`
   - `gaiasd/dfire-dataset`

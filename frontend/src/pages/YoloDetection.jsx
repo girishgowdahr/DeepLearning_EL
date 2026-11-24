@@ -55,11 +55,11 @@ export function YoloDetection() {
             </div>
             <div style={{ display: 'flex', justifyContent: 'space-between', borderBottom: '1px solid var(--border-color)', paddingBottom: '8px' }}>
               <span style={{ color: 'var(--text-muted)' }}>Inference Image Size:</span>
-              <strong style={{ fontFamily: 'var(--font-mono)' }}>416 × 416</strong>
+              <strong style={{ fontFamily: 'var(--font-mono)' }}>640 × 640</strong>
             </div>
             <div style={{ display: 'flex', justifyContent: 'space-between', borderBottom: '1px solid var(--border-color)', paddingBottom: '8px' }}>
               <span style={{ color: 'var(--text-muted)' }}>Classes:</span>
-              <span>0: Fire, 1: Smoke</span>
+              <span>0: Smoke, 1: Fire</span>
             </div>
             <div style={{ display: 'flex', justifyContent: 'space-between', borderBottom: '1px solid var(--border-color)', paddingBottom: '8px' }}>
               <span style={{ color: 'var(--text-muted)' }}>Target Device:</span>

@@ -66,12 +66,13 @@ def main():
 
     # Extract genuine metrics
     cnn_acc = f"{float(cnn.get('test_accuracy', cnn.get('accuracy', 0.0))) * 100:.1f}\\%"
-    cnn_prec = f"{float(cnn.get('classes', {}).get('fire', {}).get('precision', 0.0)):.3f}"
-    cnn_rec = f"{float(cnn.get('classes', {}).get('fire', {}).get('recall', 0.0)):.3f}"
+    cnn_prec = f"{float(cnn.get('classes', {}).get('fire', {}).get('precision', cnn.get('precision', 0.0))):.3f}"
+    cnn_rec = f"{float(cnn.get('classes', {}).get('fire', {}).get('recall', cnn.get('recall', 0.0))):.3f}"
 
-    yolo_map = f"{float(yolo.get('mAP50', 0.0)):.3f}"
-    yolo_prec = f"{float(yolo.get('precision', 0.0)):.3f}"
-    yolo_rec = f"{float(yolo.get('recall', 0.0)):.3f}"
+    test_metrics = yolo.get('test', {}) if isinstance(yolo.get('test'), dict) else {}
+    yolo_map = f"{float(yolo.get('mAP50', test_metrics.get('mAP50', 0.0))):.3f}"
+    yolo_prec = f"{float(yolo.get('precision', test_metrics.get('precision', 0.0))):.3f}"
+    yolo_rec = f"{float(yolo.get('recall', test_metrics.get('recall', 0.0))):.3f}"
 
     print(f"   CNN Metrics:  Acc={cnn_acc}, Prec={cnn_prec}, Recall={cnn_rec}")
     print(f"   YOLO Metrics: mAP50={yolo_map}, Prec={yolo_prec}, Recall={yolo_rec}")

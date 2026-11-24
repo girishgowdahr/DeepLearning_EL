@@ -13,7 +13,7 @@ This directory contains the automated training pipeline for **ForestGuard AI**:
 | :--- | :--- | :--- |
 | **Hardware** | **2 × NVIDIA Tesla T4** (or 1 × T4) | Free on Kaggle (30 GPU hours/week) |
 | **Internet** | **Enabled** | Required to fetch base weights (`yolo11n.pt`, ImageNet) |
-| **Primary Dataset** | `sayedgamal99/smoke-fire-detection-yolo` | CC0 Public Domain / CC BY 4.0 |
+| **Primary Dataset** | `sayedgamal99/smoke-fire-detection-yolo` | Not verified |
 | **Alternative Mirrors**| `thunguyen1012/smoke-fire-detection-yolo` | Fully supported via dynamic class mapping |
 | **Smoke Test Runtime** | **~3–5 minutes** | Quick verification with `SMOKE_MODE = True` |
 | **Full Production Runtime**| **~45–60 minutes** | 30 epochs YOLO + 13 epochs CNN (`SMOKE_MODE = False`) |

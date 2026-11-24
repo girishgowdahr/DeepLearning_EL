@@ -55,7 +55,7 @@ Existing vision-based wildfire detection typically relies on either pure classif
     \item \textit{CNN-only approaches}: Models such as ResNet or MobileNet classify frames as Fire/No-Fire with low latency, but provide no bounding boxes, making validation impossible in multi-camera setups.
     \item \textit{YOLO-only approaches}: Architectures such as YOLOv5, YOLOv8, and YOLO11 provide bounding boxes, but frequently generate false-positive bounding boxes on bright clouds or reflective terrain.
 \end{itemize}
-de Ven{\^a}ncio et al.~\cite{devenancio2022dfire} introduced the D-Fire dataset, establishing a standardized benchmark containing over 21,000 annotated images across fire, smoke, and background categories. ForestGuard AI builds upon this benchmark by establishing an explicit two-model fusion pipeline with zero cross-split data leakage.
+de Ven{\^a}ncio et al.~\cite{devenancio2022dfire} introduced the D-Fire dataset, establishing a standardized benchmark containing over 21,000 annotated images across fire, smoke, and background categories. ForestGuard AI builds upon this benchmark by establishing an explicit two-model fusion pipeline with synchronized cross-task split boundaries.
 
 \section{System Architecture}
 The ForestGuard AI architecture comprises three functional tiers:
@@ -66,7 +66,7 @@ The ForestGuard AI architecture comprises three functional tiers:
 \end{enumerate}
 
 \section{Dataset \& Data Integrity Protocol}
-The D-Fire dataset~\cite{devenancio2022dfire} (CC0 / CC BY 4.0 license) is utilized. To ensure zero data leakage:
+The D-Fire dataset~\cite{devenancio2022dfire} (license not verified) is utilized. To enforce cross-task split consistency:
 \begin{itemize}
     \item The YOLO model is trained directly on bounding-box annotations across train, validation, and test splits.
     \item The CNN dataset is strictly derived from the exact same split boundaries: images with $\ge 1$ fire box are labeled \texttt{fire}, while empty-annotation frames are labeled \texttt{no\_fire}.

@@ -19,7 +19,7 @@ This guide describes how to train the **YOLO11n fire & smoke bounding-box detect
    - Click **"+ Add Input"** (top right).
    - Search for `smoke-fire-detection-yolo`.
    - Select and add **`thunguyen1012/smoke-fire-detection-yolo`** (or `gaiasd/dfire-dataset`).
-   - *License*: Public CC0 / CC BY 4.0. No permissions or billing required.
+   - *License*: Licence NOT yet verified (see datasets/DATASET_INFO.md); check the original D-Fire source before redistribution.
 
 4. **Paste and Run the Script**:
    - Copy the entire contents of [`kaggle_train_yolo.py`](kaggle_train_yolo.py).

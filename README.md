@@ -20,8 +20,8 @@ Android Phone Camera ──► HTTPS Stream / WebSocket (/ws/stream) ──► F
 
 | Component | Architecture & Technology | Role in System |
 |---|---|---|
-| **Object Detection** | Ultralytics YOLO Nano (`yolo11n.pt` / `best.pt`, 416×416) | Spatial bounding-box localization of fire fronts & smoke plumes |
-| **Classification** | MobileNetV2 (ImageNet Transfer Learning, 224×224, ONNX) | Full-frame verification of fire visual signatures |
+| **Object Detection** | Ultralytics YOLO Nano (`yolo11n.pt` / `best.pt`, 640×640) | Spatial bounding-box localization of fire fronts & smoke plumes (classes: 0=smoke, 1=fire) |
+| **Classification** | MobileNetV2 (ImageNet Transfer Learning, 224×224, ONNX) | Full-frame verification of fire visual signatures (classes: 0=fire, 1=no_fire) |
 | **Decision Engine** | Rule-based matrix + $M=6, N=3$ sliding window | Prevents false alarms; eliminates model disagreement |
 | **Edge Capture** | HTML5 `getUserMedia` → Canvas → WebSocket backpressure | Mobile Android Chrome stream over HTTPS |
 | **Backend & Storage** | Python 3.11, FastAPI, Uvicorn, SQLite (`forestguard.db`), OpenCV | Single-port API & static frontend hosting on port 8000 |
@@ -83,7 +83,9 @@ Models are fine-tuned on free cloud GPUs (Kaggle T4 / Ultralytics Platform) to p
 
 Trained weights are placed into `model_weights/`:
 - `cnn_mobilenetv2.onnx`
+- `cnn_mobilenetv2.pt`
 - `yolo_best.pt`
+- `yolo_best.onnx`
 - `MODEL_INFO.json`
 
 *(The system starts gracefully even if models are absent, displaying clear "Model Unavailable" status badges).*
@@ -94,8 +96,11 @@ Trained weights are placed into `model_weights/`:
 
 ForestGuard AI includes automated test suites and a 12-scenario operational test matrix:
 ```powershell
-# Run Decision Engine unit tests
+# Run backend test suite (70 tests)
 .venv\Scripts\python.exe -m pytest backend\tests
+
+# Run physical model inference and degradation audit
+.venv\Scripts\python.exe scripts\test_model_inference.py
 
 # Run end-to-end API smoke tests
 .venv\Scripts\python.exe scripts\smoke_test.py
@@ -108,7 +113,7 @@ Detailed test results and latency figures are recorded in [`docs/testing.md`](fi
 
 - [System Architecture](file:///docs/architecture.md)
 - [Deep Learning Methodology](file:///docs/methodology.md)
-- [D-Fire Dataset & Zero-Leakage Protocol](file:///docs/dataset.md)
+- [D-Fire Dataset & Split Partitioning Protocol](file:///docs/dataset.md)
 - [Testing & Matrix Validation Report](file:///docs/testing.md)
 - [Academic Demo Presentation Guide](file:///docs/demo_guide.md)
 - [Academic Report Outline](file:///docs/academic_report_outline.md)
@@ -119,4 +124,4 @@ Detailed test results and latency figures are recorded in [`docs/testing.md`](fi
 
 ## 7. License & Credits
 - Built with PyTorch, Ultralytics YOLO, ONNX Runtime, FastAPI, React, and Recharts.
-- Trained on the D-Fire Dataset (CC0 / CC BY 4.0).
+- Trained on the D-Fire Dataset (licence not verified).

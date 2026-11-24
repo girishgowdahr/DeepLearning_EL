@@ -63,8 +63,8 @@ export function ModelInfo() {
           </p>
 
           <div style={{ fontSize: '0.82rem', display: 'flex', flexDirection: 'column', gap: '8px' }}>
-            <div>Input: <strong>416 × 416 (Dynamic letterbox scaling)</strong></div>
-            <div>Classes: <strong>0: fire, 1: smoke</strong></div>
+            <div>Input: <strong>640 × 640 (Dynamic letterbox scaling)</strong></div>
+            <div>Classes: <strong>0: smoke, 1: fire</strong></div>
             <div>Device: <strong>CPU (Single executor thread, 4 cores)</strong></div>
             <div>Starting Weights: <strong>yolo11n.pt</strong></div>
           </div>
@@ -78,7 +78,7 @@ export function ModelInfo() {
           Dataset Integrity & Zero Data-Leakage Protocol
         </h3>
         <p style={{ fontSize: '0.85rem', color: 'var(--text-muted)', marginBottom: '12px' }}>
-          Trained on the public <strong>D-Fire Dataset</strong> (CC0 1.0 Universal / CC BY 4.0).
+          Trained on the public <strong>D-Fire Dataset</strong> (licence not verified).
         </p>
         <ul style={{ fontSize: '0.82rem', color: 'var(--text-main)', paddingLeft: '20px', display: 'flex', flexDirection: 'column', gap: '6px' }}>
           <li><strong>Zero Data Leakage:</strong> The CNN dataset splits are derived directly from the exact same train/val/test split boundaries as YOLO. No image crosses splits between detection and classification.</li>

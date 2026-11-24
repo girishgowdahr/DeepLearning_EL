@@ -66,7 +66,7 @@ def main():
     print(f"   Status:       {'✅ AVAILABLE' if yolo.available else '⚠️ UNAVAILABLE (Pending Weights)'}")
     print(f"   Load Time:    {yolo_load_time:.2f} ms")
     if yolo.available:
-        print(f"   Classes:      {yolo.classes} (0: fire, 1: smoke)")
+        print(f"   Classes:      {yolo.classes} (0: smoke, 1: fire)")
 
     # 3. Decision Engine Validation
     decision_engine = DecisionEngine(window_size=6, confirm_frames=3, cooldown_seconds=10.0)

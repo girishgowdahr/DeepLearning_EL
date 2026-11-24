@@ -31,7 +31,8 @@ class TestResolveKaggleCmd:
     def test_found_windows_extension(self, tmp_path):
         dummy_bin = tmp_path / "kaggle.exe"
         dummy_bin.write_text("dummy")
-        with patch("shutil.which", side_effect=lambda x: str(dummy_bin) if x.endswith(".exe") else None):
+        with patch("sys.platform", "win32"), \
+             patch("shutil.which", side_effect=lambda x: str(dummy_bin) if x.endswith(".exe") else None):
             cmd = resolve_kaggle_cmd(str(tmp_path / "kaggle"))
             assert cmd is not None
             assert cmd[0].endswith(".exe")
@@ -41,7 +42,7 @@ class TestResolveKaggleCmd:
         py_bin.write_text("python")
         kaggle_bin = tmp_path / "kaggle.exe"
         kaggle_bin.write_text("kaggle")
-        with patch("shutil.which", return_value=None):
+        with patch("sys.platform", "win32"), patch("shutil.which", return_value=None):
             cmd = resolve_kaggle_cmd("kaggle", python_bin=str(py_bin))
             assert cmd == [str(kaggle_bin.resolve())]
 

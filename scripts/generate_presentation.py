@@ -161,7 +161,7 @@ def build_presentation():
     apply_background(s5)
     add_header(s5, "D-Fire Dataset & Zero Data-Leakage Protocol", "Dataset Integrity")
     add_bullet_card(s5, 0.8, 1.8, 5.6, 4.8, "D-Fire Benchmark Details", [
-        "Standardized open dataset by de Venâncio et al. (CC0 / CC BY 4.0).",
+        "Standardized open dataset by de Venâncio et al. (licence not verified).",
         "Over 21,000 raw frames across fire, smoke, and negative wilderness scenes.",
         "YOLO split capped at 6,000 images to time-box cloud GPU training.",
         "CNN split capped at 3,000 fire + 3,000 no-fire images."

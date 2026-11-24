@@ -63,7 +63,7 @@
 ---
 
 ### 6. Dataset & Training Procedure
-- **6.1 Source Dataset**: D-Fire Wildfire & Smoke Dataset (~21,000 images, CC0 / CC BY 4.0).
+- **6.1 Source Dataset**: D-Fire Wildfire & Smoke Dataset (~21,000 images, licence not verified).
 - **6.2 Split Integrity**: Strictly preserving train/val/test splits across both tasks.
 - **6.3 Preprocessing & Deduplication**: Difference hashing (dHash) cross-split purge, class balancing (1,500–3,000 per class), hue-preserving data augmentation.
 - **6.4 Training Platform**: Free cloud GPU (Kaggle NVIDIA T4 x2 / Ultralytics Platform).

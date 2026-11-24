@@ -27,9 +27,9 @@ def test_api_models_status(client):
     data = response.json()
     assert "cnn" in data
     assert "yolo" in data
-    # Both are currently unavailable before weights are supplied, which is correct and graceful
-    assert data["cnn"]["available"] is False
-    assert data["yolo"]["available"] is False
+    from backend.models.model_registry import registry
+    assert data["cnn"]["available"] == registry.cnn.available
+    assert data["yolo"]["available"] == registry.yolo.available
 
 def test_api_settings_roundtrip(client):
     # Read current settings

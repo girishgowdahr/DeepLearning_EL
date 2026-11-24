@@ -52,7 +52,7 @@ def create_notebook():
    ```
    smoke-fire-detection-yolo
    ```
-   Add **`sayedgamal99/smoke-fire-detection-yolo`** (License: CC0 / CC BY 4.0).
+   Add **`sayedgamal99/smoke-fire-detection-yolo`** (licence not verified).
 4. **Execution Mode**:
    - `SMOKE_MODE = True`: 1-epoch quick pipeline verification (~3–5 minutes) to test GPU, tensor flow, and packaging.
    - `SMOKE_MODE = False`: Full production training (~45–60 minutes) yielding IEEE research-grade weights.

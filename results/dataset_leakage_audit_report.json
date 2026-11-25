@@ -1,0 +1,22 @@
+{
+  "timestamp": "2026-11-24 15:57:02 UTC",
+  "status": "PENDING_OFFLINE_DATASET",
+  "dataset_directory": null,
+  "hamming_threshold": 5,
+  "images_audited": {},
+  "exact_duplicates": {
+    "intra_split": [],
+    "inter_split_leakage": []
+  },
+  "perceptual_near_duplicates": {
+    "inter_split_leakage": []
+  },
+  "annotation_integrity": {
+    "missing_labels": [],
+    "corrupted_labels": [],
+    "out_of_bounds_coords": [],
+    "invalid_classes": []
+  },
+  "class_distribution": {},
+  "verdict": "AUDIT PENDING: Full raw image dataset is not stored in local Git clone (expected per .gitignore). Training dataset resides on Kaggle (sayedgamal99/smoke-fire-detection-yolo, 20,000+ images). No zero-leakage claim is made without direct execution of this script against full raw images."
+}

@@ -1,0 +1,73 @@
+{
+  "project": "ForestGuard AI",
+  "version": "1.0.0",
+  "architecture_overview": "Dual-Model Early Wildfire & Smoke Detection Architecture (YOLO11n + MobileNetV2)",
+  "models": {
+    "yolo": {
+      "framework": "Ultralytics YOLO11 Nano",
+      "task": "Object Detection (Bounding Boxes)",
+      "input_resolution": [640, 640],
+      "class_mapping": {
+        "0": "smoke",
+        "1": "fire"
+      },
+      "git_tracked": true,
+      "artifacts": {
+        "pytorch": {
+          "filename": "yolo_best.pt",
+          "size_bytes": 5479706,
+          "sha256": "10648918c9cbbc35d93d63ad01ce5d86a579db813b72d1848c444e97a7a6f638",
+          "description": "Native PyTorch checkpoint with model weights and Ultralytics metadata"
+        },
+        "onnx": {
+          "filename": "yolo_best.onnx",
+          "size_bytes": 10664422,
+          "sha256": "af5618f2d26d28ccdc1e61a50e577cb326d75a5e972f4a5f915ae35374b2fafb",
+          "description": "Optimized ONNX export for cross-platform CPU deployment"
+        }
+      }
+    },
+    "cnn": {
+      "framework": "PyTorch torchvision MobileNetV2",
+      "task": "Binary Image Classification (Frame Verification)",
+      "input_resolution": [224, 224],
+      "class_mapping": {
+        "0": "fire",
+        "1": "no_fire"
+      },
+      "git_tracked": false,
+      "artifacts": {
+        "pytorch": {
+          "filename": "cnn_mobilenetv2.pt",
+          "size_bytes": 9471895,
+          "sha256": "44734dcad5967300a683d12851d29760950be6e0debb022516978ebbcb03f499",
+          "description": "Full PyTorch serialized model checkpoint"
+        },
+        "onnx": {
+          "filename": "cnn_mobilenetv2.onnx",
+          "size_bytes": 9197121,
+          "sha256": "1646ae489964767609d849a6e99aabe6485dc3a1c452c85026fbf9fac3810e17",
+          "description": "Standardized ONNX runtime model used by backend production service"
+        }
+      }
+    }
+  },
+  "acquisition": {
+    "git_clone_status": "YOLO weights (yolo_best.pt and yolo_best.onnx) are tracked in the Git repository and available immediately after a fresh git clone.",
+    "cnn_weights_status": "CNN weights (cnn_mobilenetv2.onnx and cnn_mobilenetv2.pt) exceed standard repository storage rules and are ignored by .gitignore.",
+    "sources": [
+      {
+        "channel": "Local / Offline Installation",
+        "archive": "cnn_artifacts.zip",
+        "contents": ["cnn_mobilenetv2.onnx", "cnn_mobilenetv2.pt", "cnn_metrics.json", "cnn_training_history.json", "MANIFEST.txt"],
+        "note": "Tested using locally assembled archive. No public GitHub Release exists yet."
+      },
+      {
+        "channel": "Kaggle Automated Training Pipeline",
+        "notebook": "training/kaggle/ForestGuard_AI_Complete_Training.ipynb",
+        "description": "Run the reproducible training notebook on Kaggle GPU to produce cnn_artifacts.zip directly from source datasets."
+      }
+    ],
+    "installation_command": ".\\scripts\\install_artifacts.ps1 -CnnZip path\\to\\cnn_artifacts.zip"
+  }
+}
